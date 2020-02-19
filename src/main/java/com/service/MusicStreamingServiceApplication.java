@@ -4,9 +4,11 @@ import com.service.entity.FileModificationSpecification;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.Arrays;
 
+@EnableScheduling
 @SpringBootApplication(scanBasePackages = "com.service")
 public class MusicStreamingServiceApplication {
 
@@ -45,6 +47,7 @@ public class MusicStreamingServiceApplication {
     videoToStream.setFirstFilePath("src/main/resources/ffmpeg-api/bin/res.mp4");
     videoToStream.setResultFilePath("src/main/resources/static/1/result-stream.m3u8");
 
+/*
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(silence));
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(mergeInLoop));
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(videoToStream));
@@ -52,6 +55,7 @@ public class MusicStreamingServiceApplication {
     videoToStream.setFirstFilePath("src/main/resources/ffmpeg-api/bin/media.mp4");
     videoToStream.setResultFilePath("src/main/resources/static/2/result-stream.m3u8");
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(videoToStream));
+*/
 
   }
 

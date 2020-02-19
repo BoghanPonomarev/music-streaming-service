@@ -2,12 +2,16 @@ package com.service.parser;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-public class TransportStreamUnit {
+public class StreamUnit {
+
+  private Long id;
 
   private String filePath;
-  private String duration;
+  private Double duration;
 
 }

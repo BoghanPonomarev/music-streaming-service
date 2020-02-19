@@ -10,36 +10,31 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Component
-public class PlaylistFileParser implements Parser<Queue<TransportStreamUnit>, String> {
+public class PlaylistFileParser implements Parser<Queue<StreamUnit>, String> {
 
-  private Pattern transportStreamChunkPattern = Pattern.compile("#EXTINF:(\\d+.?\\d+),\n" +
-          "(.+)");
+  private Pattern transportStreamChunkPattern = Pattern.compile("#EXTINF:(\\d+\\.?\\d+),(.+?\\.ts)");
 
   @Override
-  public Queue<TransportStreamUnit> parse(String playlistText) {
-    Queue<TransportStreamUnit> transportStreamUnitQueue = new LinkedList<>();
+  public Queue<StreamUnit> parse(String playlistText) {
+    Queue<StreamUnit> streamUnitQueue = new LinkedList<>();
 
     Matcher transportStreamChunkMatcher = transportStreamChunkPattern.matcher(playlistText);
     while (transportStreamChunkMatcher.find()) {
-      TransportStreamUnit extractedTransportStreamUnit = extractTransportStreamUnit(transportStreamChunkMatcher);
-      transportStreamUnitQueue.add(extractedTransportStreamUnit);
+      StreamUnit extractedStreamUnit = extractTransportStreamUnit(transportStreamChunkMatcher);
+      streamUnitQueue.add(extractedStreamUnit);
     }
 
-    return transportStreamUnitQueue;
+    return streamUnitQueue;
   }
 
-  private TransportStreamUnit extractTransportStreamUnit(Matcher transportStreamChunkMatcher) {
+  private StreamUnit extractTransportStreamUnit(Matcher transportStreamChunkMatcher) {
     String duration = transportStreamChunkMatcher.group(1);
     String filePath = transportStreamChunkMatcher.group(2);
 
-    return new TransportStreamUnit(filePath, duration);
+    StreamUnit resultStreamUnit = new StreamUnit();
+    resultStreamUnit.setDuration(Double.valueOf(duration));
+    resultStreamUnit.setFilePath(filePath);
+    return resultStreamUnit;
   }
-
-/*      try {
-    List<String> playlistText = Files.readAllLines(Paths.get(parameter.getCanonicalPath()));
-  } catch (IOException ex) {
-    log.error("Failed during file reading",ex);
-    //TODO throw custom ex
-  }*/
 
 }
