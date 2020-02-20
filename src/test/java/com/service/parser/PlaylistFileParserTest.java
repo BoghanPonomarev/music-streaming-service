@@ -20,7 +20,7 @@ public class PlaylistFileParserTest {
   public void isCorrect() {
     PlaylistFileParser playlistFileParser = new PlaylistFileParser();
 
-    Queue<StreamUnit> parse = playlistFileParser.parse(fileReader.readFile("src/test/resources/result-stream.m3u8"));
+    Queue<StreamPortion> parse = playlistFileParser.parse(fileReader.readFile("src/test/resources/result-stream.m3u8"));
 
     Assertions.assertEquals(26, parse.size());
   }

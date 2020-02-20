@@ -1,7 +1,7 @@
 package com.service.web.rest;
 
-import com.service.context.StreamContentContext;
-import com.service.parser.StreamUnit;
+import com.service.context.StreamContext;
+import com.service.parser.StreamPortion;
 import com.service.service.StreamService;
 import com.service.web.builder.ResponseBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +17,14 @@ import java.io.File;
 @RequestMapping(value = "/api/v1")
 public class ContentController {
 
-  private ResponseBuilder<String, StreamUnit> playlistResponseBuilder;
-  private StreamContentContext streamContentContext;
+  private ResponseBuilder<String, StreamPortion> playlistResponseBuilder;
+  private StreamContext streamContext;
   private StreamService streamService;
 
   @Autowired
-  public ContentController(ResponseBuilder<String, StreamUnit> playlistResponseBuilder, StreamContentContext streamContentContext, StreamService streamService) {
+  public ContentController(ResponseBuilder<String, StreamPortion> playlistResponseBuilder, StreamContext streamContext, StreamService streamService) {
     this.playlistResponseBuilder = playlistResponseBuilder;
-    this.streamContentContext = streamContentContext;
+    this.streamContext = streamContext;
     this.streamService = streamService;
     streamService.proceedStream("src/main/resources/static/1/result-stream.m3u8");
     streamService.proceedStream("src/main/resources/static/2/result-stream.m3u8");
@@ -32,12 +32,12 @@ public class ContentController {
 
   @GetMapping(value = "/playlist", produces = "application/vnd.apple.mpegurl")
   public ResponseEntity<String> getPlaylist() {
-    return ResponseEntity.ok(playlistResponseBuilder.buildResponse(streamContentContext.getCurrentStreamUnit()));
+    return ResponseEntity.ok(playlistResponseBuilder.buildResponse(streamContext.getCurrentStreamPortion()));
   }
 
   @GetMapping(value = "/ts/{id}", produces = "application/octet-stream")
   public ResponseEntity<FileSystemResource> ts(@PathVariable("id") Long id) {
-    File file = new File(streamContentContext.getStreamUnit(id).getFilePath());
+    File file = new File(streamContext.getStreamPortion(id).getFilePath());
     return ResponseEntity.ok(new FileSystemResource(file));
   }
 

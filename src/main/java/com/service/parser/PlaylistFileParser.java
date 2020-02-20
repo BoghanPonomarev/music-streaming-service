@@ -10,31 +10,31 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Component
-public class PlaylistFileParser implements Parser<Queue<StreamUnit>, String> {
+public class PlaylistFileParser implements Parser<Queue<StreamPortion>, String> {
 
   private Pattern transportStreamChunkPattern = Pattern.compile("#EXTINF:(\\d+\\.?\\d+),(.+?\\.ts)");
 
   @Override
-  public Queue<StreamUnit> parse(String playlistText) {
-    Queue<StreamUnit> streamUnitQueue = new LinkedList<>();
+  public Queue<StreamPortion> parse(String playlistText) {
+    Queue<StreamPortion> streamPortionQueue = new LinkedList<>();
 
     Matcher transportStreamChunkMatcher = transportStreamChunkPattern.matcher(playlistText);
     while (transportStreamChunkMatcher.find()) {
-      StreamUnit extractedStreamUnit = extractTransportStreamUnit(transportStreamChunkMatcher);
-      streamUnitQueue.add(extractedStreamUnit);
+      StreamPortion extractedStreamPortion = extractTransportStreamPortion(transportStreamChunkMatcher);
+      streamPortionQueue.add(extractedStreamPortion);
     }
 
-    return streamUnitQueue;
+    return streamPortionQueue;
   }
 
-  private StreamUnit extractTransportStreamUnit(Matcher transportStreamChunkMatcher) {
+  private StreamPortion extractTransportStreamPortion(Matcher transportStreamChunkMatcher) {
     String duration = transportStreamChunkMatcher.group(1);
     String filePath = transportStreamChunkMatcher.group(2);
 
-    StreamUnit resultStreamUnit = new StreamUnit();
-    resultStreamUnit.setDuration(Double.valueOf(duration));
-    resultStreamUnit.setFilePath(filePath);
-    return resultStreamUnit;
+    StreamPortion resultStreamPortion = new StreamPortion();
+    resultStreamPortion.setDuration(Double.valueOf(duration));
+    resultStreamPortion.setFilePath(filePath);
+    return resultStreamPortion;
   }
 
 }

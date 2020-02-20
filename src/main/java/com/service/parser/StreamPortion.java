@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StreamUnit {
+public class StreamPortion {
 
   private Long id;
 
