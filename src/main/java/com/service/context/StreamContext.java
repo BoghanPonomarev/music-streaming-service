@@ -8,7 +8,7 @@ public interface StreamContext {
 
   void startStream();
 
-  void appendStreamPortions(Queue<StreamPortion> streamPortionQueue);
+  void appendStreamPortions(Queue<StreamPortion> streamPortions);
 
   StreamPortion getStreamPortion(Long portionId);
 

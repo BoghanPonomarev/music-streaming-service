@@ -3,11 +3,14 @@ package com.service.context;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
+import com.service.file.SystemResourceCleaner;
 import com.service.parser.StreamPortion;
 import com.service.util.LockUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class StreamContextImpl implements StreamContext {
 
   private static final int DEFAULT_AMONG_ITERATION_DELAY = 10;
@@ -31,6 +35,7 @@ public class StreamContextImpl implements StreamContext {
 
   @SuppressWarnings("UnstableApiUsage")
   private RangeMap<Long, StreamSegment> contentSegments = TreeRangeMap.create();
+  private final SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
 
   @Override
   public void startStream() {
@@ -92,8 +97,8 @@ public class StreamContextImpl implements StreamContext {
 
   class StreamSegment {
 
-    private long portionsQuantity;
     private long portionsLeft;
+    private long portionsQuantity;
     private long amongIterationDelay;
 
     private ScheduledExecutorService iterationScheduler;
@@ -119,7 +124,7 @@ public class StreamContextImpl implements StreamContext {
     }
 
     void stopSegmentStream() {
-      //TODO clean resources
+      systemResourceCleaner.cleanStreamResource(contentStreamPortions.values());
       StreamSegment nextSegment = contentSegments.get(currentStreamIteration);
 
       if(nextSegment != null) {
