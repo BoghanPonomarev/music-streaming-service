@@ -1,10 +1,10 @@
 package com.service.service;
 
 import com.service.context.StreamContext;
-import com.service.file.FileReader;
-import com.service.file.SystemResourceCleaner;
+import com.service.system.FileReader;
+import com.service.system.SystemResourceCleaner;
 import com.service.parser.Parser;
-import com.service.parser.StreamPortion;
+import com.service.entity.StreamPortion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +29,7 @@ public class StreamService {
     streamContext.startStream();
     stringSystemResourceCleaner.cleanStreamResource(playListFilePath);
   }
+
+
 
 }

@@ -1,4 +1,4 @@
-package com.service.file;
+package com.service.system;
 
 public interface SystemResourceCleaner<T> {
 

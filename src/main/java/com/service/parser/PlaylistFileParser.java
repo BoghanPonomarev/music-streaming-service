@@ -1,5 +1,6 @@
 package com.service.parser;
 
+import com.service.entity.StreamPortion;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

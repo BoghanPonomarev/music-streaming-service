@@ -1,4 +1,4 @@
-package com.service.parser;
+package com.service.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

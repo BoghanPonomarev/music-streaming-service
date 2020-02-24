@@ -1,6 +1,7 @@
 package com.service.parser;
 
-import com.service.file.FileReader;
+import com.service.entity.StreamPortion;
+import com.service.system.FileReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

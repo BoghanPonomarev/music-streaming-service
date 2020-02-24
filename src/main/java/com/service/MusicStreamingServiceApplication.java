@@ -30,7 +30,7 @@ public class MusicStreamingServiceApplication {
 		executor.executeCommand(silence);
 		executor.executeCommand(defaultFileCommand);*/
 
-    FileModificationCommandBuilder fileModificationCommandBuilder = run.getBean(FileModificationCommandBuilder.class);
+    FileModificationCommandBuilder ю = run.getBean(FileModificationCommandBuilder.class);
     FileModificationCommandExecutor executor = run.getBean(FileModificationCommandExecutor.class);
 
     FileModificationSpecification silence = run.getBean("removeAudioFromFileSpecification", FileModificationSpecification.class);
@@ -46,7 +46,6 @@ public class MusicStreamingServiceApplication {
     FileModificationSpecification videoToStream = run.getBean("videoToStream", FileModificationSpecification.class);
     videoToStream.setFirstFilePath("src/main/resources/ffmpeg-api/bin/res.mp4");
     videoToStream.setResultFilePath("src/main/resources/static/1/result-stream.m3u8");
-
 /*
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(silence));
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(mergeInLoop));

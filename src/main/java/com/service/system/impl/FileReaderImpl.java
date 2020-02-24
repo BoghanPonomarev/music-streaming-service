@@ -1,12 +1,12 @@
-package com.service.file;
+package com.service.system.impl;
 
+import com.service.system.FileReader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component

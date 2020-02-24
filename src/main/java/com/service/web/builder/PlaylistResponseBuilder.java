@@ -1,6 +1,6 @@
 package com.service.web.builder;
 
-import com.service.parser.StreamPortion;
+import com.service.entity.StreamPortion;
 import org.springframework.stereotype.Component;
 
 @Component

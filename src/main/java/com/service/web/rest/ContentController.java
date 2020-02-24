@@ -1,7 +1,7 @@
 package com.service.web.rest;
 
 import com.service.context.StreamContext;
-import com.service.parser.StreamPortion;
+import com.service.entity.StreamPortion;
 import com.service.service.StreamService;
 import com.service.web.builder.ResponseBuilder;
 import lombok.extern.slf4j.Slf4j;
