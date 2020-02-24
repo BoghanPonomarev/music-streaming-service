@@ -1,14 +1,24 @@
 package com.service;
 
-import com.service.entity.FileModificationSpecification;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.service.dao.PlaylistRepository;
+import com.service.dao.StreamRepository;
+import com.service.entity.*;
+import com.service.service.StreamManagementService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.io.File;
 import java.util.Arrays;
 
 @EnableScheduling
+@EnableTransactionManagement
+@EnableJpaRepositories(basePackages = "com.service.dao")
 @SpringBootApplication(scanBasePackages = "com.service")
 public class MusicStreamingServiceApplication {
 
@@ -55,6 +65,12 @@ public class MusicStreamingServiceApplication {
     videoToStream.setResultFilePath("src/main/resources/static/2/result-stream.m3u8");
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(videoToStream));
 */
+
+    StreamManagementService rep = run.getBean(StreamManagementService.class);
+    String newStream = "newStream39";
+    rep.createStream(newStream);
+    rep.updateVideo(newStream, new File("src/main/resources/static/1/result-stream.m3u8"));
+    rep.updateVideo(newStream, new File("src/main/resources/static/2/result-stream.m3u8"));
 
   }
 

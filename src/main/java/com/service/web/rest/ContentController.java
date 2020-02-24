@@ -26,8 +26,8 @@ public class ContentController {
     this.playlistResponseBuilder = playlistResponseBuilder;
     this.streamContext = streamContext;
     this.streamService = streamService;
-    streamService.proceedStream("src/main/resources/stream-segment/0/result-stream.m3u8");
-    streamService.proceedStream("src/main/resources/stream-segment/00/result-stream.m3u8");
+/*    streamService.proceedStream("src/main/resources/stream-segment/0/result-stream.m3u8");
+    streamService.proceedStream("src/main/resources/stream-segment/00/result-stream.m3u8");*/
   }
 
   @GetMapping(value = "/playlist", produces = "application/vnd.apple.mpegurl")

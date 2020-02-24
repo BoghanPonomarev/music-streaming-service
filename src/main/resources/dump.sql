@@ -57,3 +57,9 @@ CREATE TABLE `music`.`stream` (
     REFERENCES `music`.`con_stream_status` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE);
+
+INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('1', 'CREATED');
+INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('2', 'PLAYING');
+INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('3', 'STOPPED');
+
+
