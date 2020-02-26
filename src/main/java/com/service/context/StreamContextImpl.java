@@ -61,11 +61,11 @@ public class StreamContextImpl implements StreamContext {
 
   private StreamSegment convertToSegment(Queue<StreamPortion> streamPortions) {
     Map<Long, StreamPortion> portionsMap = recollectToMap(streamPortions);
-            
+
     double portionAmongIterationDelay = portionsMap.values().stream()
             .mapToDouble(StreamPortion::getDuration)
             .average().orElse(DEFAULT_AMONG_ITERATION_DELAY);
-    
+
     return new StreamSegment((long) portionAmongIterationDelay, portionsMap);
   }
 
@@ -127,7 +127,7 @@ public class StreamContextImpl implements StreamContext {
       systemResourceCleaner.cleanStreamResource(contentStreamPortions.values());
       StreamSegment nextSegment = contentSegments.get(currentStreamIteration);
 
-      if(nextSegment != null) {
+      if (nextSegment != null) {
         nextSegment.startSegmentStream();
       }
       iterationScheduler.shutdownNow();

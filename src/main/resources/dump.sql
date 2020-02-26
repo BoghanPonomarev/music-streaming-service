@@ -59,7 +59,8 @@ CREATE TABLE `music`.`stream` (
     ON UPDATE CASCADE);
 
 INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('1', 'CREATED');
-INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('2', 'PLAYING');
-INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('3', 'STOPPED');
+INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('2', 'COMPILED');
+INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('3', 'PLAYING');
+INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('4', 'STOPPED');
 
 

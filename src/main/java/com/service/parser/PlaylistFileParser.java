@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Component
-public class PlaylistFileParser implements Parser<Queue<StreamPortion>, String> {
+public class PlaylistFileParser implements Parser<String, Queue<StreamPortion>> {
 
   private Pattern transportStreamChunkPattern = Pattern.compile("#EXTINF:(\\d+\\.?\\d+),(.+?\\.ts)");
 

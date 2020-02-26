@@ -15,7 +15,7 @@ public class FileReaderImpl implements FileReader {
   @Override
   public String readFile(String filePath) {
     try {
-     return String.join("", Files.readAllLines(Paths.get(filePath)));
+      return String.join("", Files.readAllLines(Paths.get(filePath)));
     } catch (IOException ex) {
       log.error("Failed during file reading", ex);
       //TODO throw custom ex

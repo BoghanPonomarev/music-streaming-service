@@ -1,6 +1,6 @@
 package com.service.parser;
 
-public interface Parser<R,T> {
+public interface Parser<T, R> {
 
   R parse(T parameter);
 

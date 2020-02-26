@@ -1,20 +1,13 @@
 package com.service;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.service.dao.PlaylistRepository;
-import com.service.dao.StreamRepository;
 import com.service.entity.*;
-import com.service.service.StreamManagementService;
+import com.service.executor.FileModificationCommandExecutor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import java.io.File;
-import java.util.Arrays;
 
 @EnableScheduling
 @EnableTransactionManagement
@@ -40,8 +33,7 @@ public class MusicStreamingServiceApplication {
 		executor.executeCommand(silence);
 		executor.executeCommand(defaultFileCommand);*/
 
-    FileModificationCommandBuilder ю = run.getBean(FileModificationCommandBuilder.class);
-    FileModificationCommandExecutor executor = run.getBean(FileModificationCommandExecutor.class);
+/*    FileModificationCommandExecutor executor = run.getBean(FileModificationCommandExecutor.class);
 
     FileModificationSpecification silence = run.getBean("removeAudioFromFileSpecification", FileModificationSpecification.class);
     silence.setFirstFilePath("src/main/resources/ffmpeg-api/bin/mus.mp3");
@@ -55,7 +47,7 @@ public class MusicStreamingServiceApplication {
 
     FileModificationSpecification videoToStream = run.getBean("videoToStream", FileModificationSpecification.class);
     videoToStream.setFirstFilePath("src/main/resources/ffmpeg-api/bin/res.mp4");
-    videoToStream.setResultFilePath("src/main/resources/static/1/result-stream.m3u8");
+    videoToStream.setResultFilePath("src/main/resources/static/1/result-stream.m3u8");*/
 /*
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(silence));
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(mergeInLoop));
@@ -66,11 +58,13 @@ public class MusicStreamingServiceApplication {
     executor.executeCommand(fileModificationCommandBuilder.buildModificationQuery(videoToStream));
 */
 
+/*
     StreamManagementService rep = run.getBean(StreamManagementService.class);
     String newStream = "newStream39";
     rep.createStream(newStream);
     rep.updateVideo(newStream, new File("src/main/resources/static/1/result-stream.m3u8"));
     rep.updateVideo(newStream, new File("src/main/resources/static/2/result-stream.m3u8"));
+*/
 
   }
 
