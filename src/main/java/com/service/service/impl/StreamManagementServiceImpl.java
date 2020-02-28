@@ -1,4 +1,4 @@
-package com.service.service;
+package com.service.service.impl;
 
 import com.service.context.StreamContext;
 import com.service.dao.AudioRepository;
@@ -10,8 +10,9 @@ import com.service.entity.Video;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.exception.EntityNotFoundException;
 import com.service.exception.IllegalStreamStateException;
-import com.service.service.strategy.StreamCompileContext;
-import com.service.service.strategy.StreamCompileStrategy;
+import com.service.service.StreamManagementService;
+import com.service.stream.compile.StreamCompileContext;
+import com.service.stream.compile.StreamCompiler;
 import com.service.system.FileReader;
 import com.service.system.SystemResourceCleaner;
 import com.service.parser.Parser;
@@ -34,7 +35,7 @@ public class StreamManagementServiceImpl implements StreamManagementService {
   private final Parser<String, Queue<StreamPortion>> parser;
   private final SystemResourceCleaner<String> stringSystemResourceCleaner;
 
-  private final StreamCompileStrategy streamCompileStrategy;
+  private final StreamCompiler streamCompiler;
   private final StreamRepository streamRepository;
   private final VideoRepository videoRepository;
   private final AudioRepository audioRepository;
@@ -50,7 +51,6 @@ public class StreamManagementServiceImpl implements StreamManagementService {
     stringSystemResourceCleaner.cleanStreamResource(playListFilePath);
   }
 
-
   @Override
   public void compileStream(String streamName) {
     Stream targetStream = getStreamWithStatusCheck(streamName, StreamStatusConst.CREATED);
@@ -60,7 +60,7 @@ public class StreamManagementServiceImpl implements StreamManagementService {
             .stream().map(Audio::getFilePath).collect(Collectors.toList());
 
     StreamCompileContext streamCompileContext = new StreamCompileContext(START_STREAM_COMPILATION_ITERATION, streamName, streamVideos.get(0).getFilePath(), streamAudiosPathList);
-    streamCompileStrategy.compileStream(streamCompileContext);
+    streamCompiler.compileStream(streamCompileContext);
 
     targetStream.setStreamStatusId(StreamStatusConst.COMPILED.getId());
     streamRepository.save(targetStream);

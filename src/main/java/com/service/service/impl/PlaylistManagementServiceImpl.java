@@ -1,4 +1,4 @@
-package com.service.service;
+package com.service.service.impl;
 
 import com.service.dao.AudioRepository;
 import com.service.dao.PlaylistRepository;
@@ -10,6 +10,7 @@ import com.service.entity.Stream;
 import com.service.entity.Video;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.exception.EntityNotFoundException;
+import com.service.service.PlaylistManagementService;
 import com.service.web.dto.PlaylistDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

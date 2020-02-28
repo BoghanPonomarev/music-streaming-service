@@ -1,4 +1,4 @@
-package com.service.service.strategy;
+package com.service.stream.compile;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.service.service.strategy;
+package com.service.stream.compile;
 
 import com.service.entity.FileModificationCommand;
 import com.service.executor.FileModificationCommandExecutor;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Component
 @Scope("prototype")
 @RequiredArgsConstructor
-public class StreamCompileStrategyImpl implements StreamCompileStrategy {
+public class StreamCompilerImpl implements StreamCompiler {
 
 
   private final FileModificationCommand videoToStreamCommand;
