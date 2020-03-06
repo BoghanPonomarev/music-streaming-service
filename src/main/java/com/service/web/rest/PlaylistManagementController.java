@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -58,6 +59,12 @@ public class PlaylistManagementController {
   @GetMapping(value = "/playlist/{streamName}", produces = "application/json")
   public ResponseEntity<PlaylistDto> getPlaylist(@PathVariable("streamName") String streamName) {
     return ResponseEntity.ok(playlistManagementService.getPlaylist(streamName));
+  }
+
+  @ResponseBody
+  @GetMapping(value = "/playlists", produces = "application/json")
+  public ResponseEntity<List<String>> getPlaylistsNames() {
+    return ResponseEntity.ok(playlistManagementService.getPlaylistsNames());
   }
 
 }

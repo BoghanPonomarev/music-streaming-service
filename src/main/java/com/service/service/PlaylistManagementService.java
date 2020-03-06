@@ -4,6 +4,7 @@ import com.service.web.dto.PlaylistDto;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 
 public interface PlaylistManagementService {
 
@@ -17,4 +18,5 @@ public interface PlaylistManagementService {
 
   PlaylistDto getPlaylist(String streamName);
 
+    List<String> getPlaylistsNames();
 }

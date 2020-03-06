@@ -152,4 +152,9 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
             .build();
   }
 
+  @Override
+  public List<String> getPlaylistsNames() {
+    return streamRepository.findAll().stream()
+            .map(Stream::getName).collect(Collectors.toList());
+  }
 }
