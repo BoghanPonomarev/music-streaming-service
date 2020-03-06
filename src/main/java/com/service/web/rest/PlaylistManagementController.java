@@ -82,6 +82,13 @@ public class PlaylistManagementController {
     return ResponseEntity.ok(FileUtils.readFileToByteArray(animationPart));
   }
 
+  @ResponseBody
+  @GetMapping(value = "/audios/{id}")
+  public ResponseEntity<byte[]> getAudioPart(@PathVariable("id") Long id) throws IOException {
+    File animationPart = mediaService.getAudioPart(id);
+    return ResponseEntity.ok(FileUtils.readFileToByteArray(animationPart));
+  }
+
 }
 
 
