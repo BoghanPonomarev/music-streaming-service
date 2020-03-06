@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class StreamManagementController {
 
   private final StreamManagementService streamManagementService;

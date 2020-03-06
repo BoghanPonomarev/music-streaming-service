@@ -12,6 +12,7 @@ import com.service.entity.enums.StreamStatusConst;
 import com.service.exception.EntityNotFoundException;
 import com.service.service.PlaylistManagementService;
 import com.service.web.dto.PlaylistDto;
+import com.service.web.dto.StreamHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -153,8 +154,14 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
   }
 
   @Override
-  public List<String> getPlaylistsNames() {
+  public List<StreamHeaderDto> getPlaylistsNames() {
     return streamRepository.findAll().stream()
-            .map(Stream::getName).collect(Collectors.toList());
+            .map(this::extractStreamHeader)
+            .collect(Collectors.toList());
+  }
+
+  private StreamHeaderDto extractStreamHeader(Stream stream) {
+    StreamStatusConst streamStatus = StreamStatusConst.valueOf(stream.getStreamStatusId());
+    return new StreamHeaderDto(stream.getName(), streamStatus.getValue());
   }
 }

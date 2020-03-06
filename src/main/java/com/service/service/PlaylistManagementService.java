@@ -1,6 +1,7 @@
 package com.service.service;
 
 import com.service.web.dto.PlaylistDto;
+import com.service.web.dto.StreamHeaderDto;
 
 import java.io.File;
 import java.io.InputStream;
@@ -18,5 +19,5 @@ public interface PlaylistManagementService {
 
   PlaylistDto getPlaylist(String streamName);
 
-    List<String> getPlaylistsNames();
+    List<StreamHeaderDto> getPlaylistsNames();
 }

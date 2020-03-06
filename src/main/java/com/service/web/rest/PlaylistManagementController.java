@@ -1,16 +1,22 @@
 package com.service.web.rest;
 
+import com.service.service.MediaService;
 import com.service.service.PlaylistManagementService;
 import com.service.web.dto.PlaylistDto;
 import com.service.web.dto.ResourceCreationResponse;
+import com.service.web.dto.StreamHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -20,9 +26,11 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PlaylistManagementController {
 
   private final PlaylistManagementService playlistManagementService;
+  private final MediaService mediaService;
 
   @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)
@@ -56,15 +64,24 @@ public class PlaylistManagementController {
   }
 
   @ResponseBody
-  @GetMapping(value = "/playlist/{streamName}", produces = "application/json")
+  @GetMapping(value = "/playlists/{streamName}", produces = "application/json")
   public ResponseEntity<PlaylistDto> getPlaylist(@PathVariable("streamName") String streamName) {
     return ResponseEntity.ok(playlistManagementService.getPlaylist(streamName));
   }
 
   @ResponseBody
   @GetMapping(value = "/playlists", produces = "application/json")
-  public ResponseEntity<List<String>> getPlaylistsNames() {
+  public ResponseEntity<List<StreamHeaderDto>> getPlaylistsNames() {
     return ResponseEntity.ok(playlistManagementService.getPlaylistsNames());
   }
 
+  @ResponseBody
+  @GetMapping(value = "/videos/{id}")
+  public ResponseEntity<byte[]> getAnimationPart(@PathVariable("id") Long id) throws IOException {
+    File animationPart = mediaService.getAnimationPart(id);
+    return ResponseEntity.ok(FileUtils.readFileToByteArray(animationPart));
+  }
+
 }
+
+
