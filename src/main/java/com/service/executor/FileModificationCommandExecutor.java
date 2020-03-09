@@ -40,6 +40,7 @@ public class FileModificationCommandExecutor {
         process.waitFor(5, TimeUnit.SECONDS);
         log.info("Process alive - {} ", process.isAlive());
         process.getInputStream().read();
+        process.getOutputStream().flush();
       } while (process.isAlive());
     } catch (InterruptedException | IOException ex) {
       log.error("Command execution process failed", ex);

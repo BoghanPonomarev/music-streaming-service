@@ -19,6 +19,6 @@ public class PlaylistDto {
   private String streamName;
   private String status;
   private List<Long> videoIdList;
-  private List<Long> audioIdList;
+  private List<MediaDto> audioIdList;
 
 }

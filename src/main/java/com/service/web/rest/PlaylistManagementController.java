@@ -34,14 +34,14 @@ public class PlaylistManagementController {
 
   @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)
-  @PostMapping(value = "/playlist/{streamName}", consumes = "application/json", produces = "application/json")
+  @PostMapping(value = "/streams/{streamName}", produces = "application/json")
   public ResponseEntity<ResourceCreationResponse<Long>> createPlaylist(@PathVariable("streamName") String streamName) {
     Long newStreamId = playlistManagementService.createStream(streamName);
     return ResponseEntity.ok(new ResourceCreationResponse<>(newStreamId));
   }
 
   @ResponseBody
-  @PutMapping(value = "/playlist/{streamName}/video", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
+  @PutMapping(value = "/streams/{streamName}/video", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<ResourceCreationResponse<Long>> updateVideo(@PathVariable("streamName") String streamName,
                                                                     @RequestPart("video") MultipartFile video) throws IOException {
     Long newVideoId = playlistManagementService.updateVideo(streamName, video.getInputStream(), video.getOriginalFilename());
@@ -49,7 +49,7 @@ public class PlaylistManagementController {
   }
 
   @ResponseBody
-  @PostMapping(value = "/playlist/{streamName}/audio", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/streams/{streamName}/audio", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<ResourceCreationResponse<Long>> addAudio(@PathVariable("streamName") String streamName,
                                                                  @RequestPart("audio") MultipartFile video) throws IOException {
     Long newAudioId = playlistManagementService.addAudioFile(streamName, video.getInputStream(), video.getOriginalFilename());
@@ -57,7 +57,7 @@ public class PlaylistManagementController {
   }
 
   @ResponseBody
-  @DeleteMapping(value = "/audio/{audioId}", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
+  @DeleteMapping(value = "/audios/{audioId}")
   public ResponseEntity<String> deleteAudio(@PathVariable("audioId") Long audioId) {
     playlistManagementService.deleteAudioFile(audioId);
     return ResponseEntity.ok("OK");

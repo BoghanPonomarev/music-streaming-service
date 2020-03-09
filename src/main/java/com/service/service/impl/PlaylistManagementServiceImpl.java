@@ -11,6 +11,7 @@ import com.service.entity.Video;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.exception.EntityNotFoundException;
 import com.service.service.PlaylistManagementService;
+import com.service.web.dto.MediaDto;
 import com.service.web.dto.PlaylistDto;
 import com.service.web.dto.StreamHeaderDto;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +72,8 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
     Long playlistId = streamToUpdate.getPlaylistId();
     deleteCurrentVideos(playlistId);
 
-    File fileToSave = addFile(streamName, videoInputStream, originalFileName);
+    String noSpacesOriginalFileName = originalFileName.replace(" ", "");
+    File fileToSave = addFile(streamName, videoInputStream, noSpacesOriginalFileName);
 
     Video newVideo = new Video();
     newVideo.setPlaylistId(playlistId);
@@ -109,7 +111,8 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
   }
 
   private File addFile(String streamName, InputStream inputStream, String originalFileName) {
-    String saveFilePath = STREAM_SOURCES_FILE_PATH + "/" + streamName + "/" + originalFileName;
+    String noSpacesOriginalFileName = originalFileName.replace(" ", "");
+    String saveFilePath = STREAM_SOURCES_FILE_PATH + "/" + streamName + "/" + noSpacesOriginalFileName;
 
     try {
       File destinationFile = new File(saveFilePath);
@@ -148,9 +151,17 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
             .streamId(stream.getId())
             .status(status)
             .streamName(stream.getName())
-            .audioIdList(audioRepository.findAllByPlaylistId(playlistId).stream().map(Audio::getId).collect(Collectors.toList()))
+            .audioIdList(audioRepository.findAllByPlaylistId(playlistId).stream().map(this::mapAudio).collect(Collectors.toList()))
             .videoIdList(videoRepository.findAllByPlaylistId(playlistId).stream().map(Video::getId).collect(Collectors.toList()))
             .build();
+  }
+
+  private MediaDto mapAudio(Audio audio) {
+    MediaDto mediaDto = new MediaDto();
+    mediaDto.setId(audio.getId());
+    String filePath = audio.getFilePath();
+    mediaDto.setFileName(filePath.substring(filePath.lastIndexOf("/") + 1));
+    return mediaDto;
   }
 
   @Override
