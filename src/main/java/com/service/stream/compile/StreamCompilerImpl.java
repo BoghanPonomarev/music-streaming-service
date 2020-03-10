@@ -51,9 +51,9 @@ public class StreamCompilerImpl implements StreamCompiler {
 
     private String executeWithParams(String firstParamFile, String secondParamFile, FileModificationCommand targetCommand, String outFileExtension) {
         String outputFileName = "src/main/resources/temp/" + UUID.randomUUID() + "." + outFileExtension;
-        targetCommand.setOutputFile(outputFileName);
-        targetCommand.setFirstInputFile(firstParamFile);
-        targetCommand.setSecondInputFile(secondParamFile);
+        targetCommand.setOutputFile(outputFileName.replace("/","\\"));
+        targetCommand.setFirstInputFile(firstParamFile.replace("/","\\"));
+        targetCommand.setSecondInputFile(secondParamFile.replace("/","\\"));
 
         commandExecutor.executeCommand(targetCommand);
         return outputFileName;

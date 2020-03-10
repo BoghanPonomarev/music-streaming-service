@@ -10,7 +10,7 @@ import org.springframework.core.annotation.Order;
 @Configuration
 public class CommandConfig {
 
-  private String COMMAND_WORD_PATH = "ffmpeg";
+  private String COMMAND_WORD_PATH = "src/main/resources/ffmpeg-api/bin/ffmpeg";
 
   @Bean
   @Order(1)
@@ -26,8 +26,8 @@ public class CommandConfig {
   @Scope("prototype")
   @Qualifier("concatenateAudiosCommand")
   public FileModificationCommand concatenateAudiosCommand() {
-    String concatenateAudiosCommand = "%s %s %s > %s";
-    return new FileModificationCommand(concatenateAudiosCommand, "cat");
+    String concatenateAudiosCommand = "%s -i \"concat:%s|%s\" -acodec copy %s";
+    return new FileModificationCommand(concatenateAudiosCommand, COMMAND_WORD_PATH);
   }
 
   @Bean
