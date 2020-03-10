@@ -13,4 +13,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
 
   Optional<Stream> findByName(String name);
 
+  @Query("UPDATE Stream s SET s.compilationIteration=s.compilationIteration + 1 WHERE s.id=:streamId")
+  void incrementCompilationIterationById(@Param("streamId") Long streamId);
+
 }

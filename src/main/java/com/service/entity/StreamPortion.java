@@ -11,6 +11,7 @@ public class StreamPortion {
 
   private Long id;
 
+  private String streamName;
   private String filePath;
   private Double duration;
 

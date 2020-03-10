@@ -1,93 +1,55 @@
 package com.service.stream.compile;
 
-import com.service.entity.FileModificationCommand;
-import com.service.executor.FileModificationCommandExecutor;
+import com.service.dao.AudioRepository;
+import com.service.dao.StreamRepository;
+import com.service.dao.VideoRepository;
+import com.service.entity.Audio;
+import com.service.entity.Stream;
+import com.service.entity.Video;
+import com.service.entity.enums.StreamStatusConst;
+import com.service.exception.EntityNotFoundException;
+import com.service.exception.IllegalStreamStateException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
-@Slf4j
-@Component
-@Scope("prototype")
+@Service
 @RequiredArgsConstructor
 public class StreamCompilerImpl implements StreamCompiler {
 
+    private static final int START_STREAM_COMPILATION_ITERATION = 1;
 
-    private final FileModificationCommand videoToStreamCommand;
-    private final FileModificationCommand concatenateAudiosCommand;
-    private final FileModificationCommand removeAudioFromFileCommand;
-    private final FileModificationCommand mergeLoopedVideoBeforeAudioFinishCommand;
-
-    private final FileModificationCommandExecutor commandExecutor;
+    private final StreamCompileChain streamCompileChain;
+    private final StreamRepository streamRepository;
+    private final VideoRepository videoRepository;
+    private final AudioRepository audioRepository;
 
     @Override
-    public String compileStream(StreamCompileContext streamCompileContext) {
-        String firstAudioElement = concatenateAudios(streamCompileContext.getAudioFilePathList());
-        String silentVideoFilePath = executeWithParams(streamCompileContext.getVideoFilePath(), firstAudioElement, removeAudioFromFileCommand, "mp4");
-        String loopedVideoWithAudio = executeWithParams(silentVideoFilePath, firstAudioElement, mergeLoopedVideoBeforeAudioFinishCommand, "mp4");
+    public void compileStream(String streamName) {
+        Stream targetStream = getStreamWithStatusCheck(streamName, StreamStatusConst.CREATED);
 
-        String resultFilePath = compileStream(streamCompileContext.getStreamName(), loopedVideoWithAudio, streamCompileContext.getIteration());
-        cleanResources(silentVideoFilePath, loopedVideoWithAudio);
-        return resultFilePath;
+        List<Video> streamVideos = videoRepository.findAllByPlaylistId(targetStream.getPlaylistId());
+        List<String> streamAudiosPathList = audioRepository.findAllByPlaylistId(targetStream.getPlaylistId())
+                .stream().map(Audio::getFilePath).collect(Collectors.toList());
+
+        StreamCompileContext streamCompileContext = new StreamCompileContext(START_STREAM_COMPILATION_ITERATION, streamName, streamVideos.get(0).getFilePath(), streamAudiosPathList);
+        streamCompileChain.compileStream(streamCompileContext);
+
+        targetStream.setStreamStatusId(StreamStatusConst.COMPILED.getId());
+        streamRepository.save(targetStream);
     }
 
-    private String concatenateAudios(List<String> audioFilesPaths) {
-      String mainFilePath = audioFilesPaths.get(0);
-        for (int i = 1; i < audioFilesPaths.size(); i++) {
-          mainFilePath = executeWithParams(mainFilePath, audioFilesPaths.get(i), concatenateAudiosCommand, "mp3");
+    private Stream getStreamWithStatusCheck(String streamName, StreamStatusConst supportedStatus) {
+        Stream targetStream = streamRepository.findByName(streamName)
+                .orElseThrow(() -> new EntityNotFoundException("No such stream"));
+
+        if (targetStream.getStreamStatusId() != supportedStatus.getId()) {
+            throw new IllegalStreamStateException("Stream in illegal state");
         }
 
-        return mainFilePath;
-    }
-
-    private String executeWithParams(String firstParamFile, String secondParamFile, FileModificationCommand targetCommand, String outFileExtension) {
-        String outputFileName = "src/main/resources/temp/" + UUID.randomUUID() + "." + outFileExtension;
-        targetCommand.setOutputFile(outputFileName.replace("/","\\"));
-        targetCommand.setFirstInputFile(firstParamFile.replace("/","\\"));
-        targetCommand.setSecondInputFile(secondParamFile.replace("/","\\"));
-
-        commandExecutor.executeCommand(targetCommand);
-        return outputFileName;
-    }
-
-    private String compileStream(String streamName, String sourceFile, Integer compilationIteration) {
-        String resultCompilationDirectory = "src/main/resources/stream-source/" + streamName + "/" + compilationIteration;
-        createCompilationDirectory(resultCompilationDirectory);
-
-        String mainStreamFilePath = resultCompilationDirectory + "/" + streamName + ".m3u8";
-        videoToStreamCommand.setOutputFile(mainStreamFilePath);
-        videoToStreamCommand.setFirstInputFile(sourceFile);
-
-        commandExecutor.executeCommand(videoToStreamCommand);
-        return mainStreamFilePath;
-    }
-
-    private void createCompilationDirectory(String resultCompilationDirectory) {
-        try {
-            Files.createDirectories(Paths.get(resultCompilationDirectory));
-        } catch (IOException ex) {
-            log.error("Failed during new stream directory", ex);
-        }
-    }
-
-    private void cleanResources(String... filesToDelete) {
-        for (String s : filesToDelete) {
-            try {
-                FileUtils.forceDelete(new File(s));
-            } catch (IOException ex) {
-                log.error("Failed during stream compilation in resources cleaning", ex);
-            }
-        }
+        return targetStream;
     }
 
 }
-

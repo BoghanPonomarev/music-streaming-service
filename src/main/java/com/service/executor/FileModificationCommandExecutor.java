@@ -3,9 +3,13 @@ package com.service.executor;
 import com.service.entity.FileModificationCommand;
 import com.service.exception.ModificationCommandExecutionException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -14,11 +18,14 @@ import java.util.concurrent.TimeUnit;
 public class FileModificationCommandExecutor {
 
   public void executeCommand(FileModificationCommand command) {
-    ProcessBuilder processBuilder = new ProcessBuilder(command.toExecutableParams());
-    processBuilder.redirectErrorStream(true);
-
-    Optional<Process> commandExecutionProcess = startProcess(processBuilder);
-    commandExecutionProcess.ifPresent(this::waitProcessFinishing);
+    CommandLine cmdLine = CommandLine.parse(String.join(" ", command.toExecutableParams()));
+    DefaultExecutor executor = new DefaultExecutor();
+    try {
+      int exitValue = executor.execute(cmdLine);
+      System.out.println("Result: " + exitValue);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private Optional<Process> startProcess(ProcessBuilder processBuilder) {
@@ -36,12 +43,12 @@ public class FileModificationCommandExecutor {
 
   private void waitProcessFinishing(Process process) {
     try {
+      BufferedReader bur= new BufferedReader(new InputStreamReader(process.getInputStream()));
       do {
         process.waitFor(5, TimeUnit.SECONDS);
         log.info("Process alive - {} ", process.isAlive());
-        process.getInputStream().read();
       } while (process.isAlive());
-    } catch (InterruptedException | IOException ex) {
+    } catch (InterruptedException ex) {
       log.error("Command execution process failed", ex);
       process.destroy();
       throw new ModificationCommandExecutionException("Waiting for the end of the command was interrupted", ex);

@@ -22,5 +22,7 @@ public class Stream {
   private Long playlistId;
   @Column(name = "status_id")
   private Long streamStatusId;
+  @Column(name ="compilation_iteration")
+  private Long compilationIteration;
 
 }

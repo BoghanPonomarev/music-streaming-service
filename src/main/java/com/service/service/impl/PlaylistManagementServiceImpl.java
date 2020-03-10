@@ -160,7 +160,7 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
     MediaDto mediaDto = new MediaDto();
     mediaDto.setId(audio.getId());
     String filePath = audio.getFilePath();
-    mediaDto.setFileName(filePath.substring(filePath.lastIndexOf("/") + 1));
+    mediaDto.setFileName(filePath.substring(filePath.lastIndexOf(File.separator) + 1));
     return mediaDto;
   }
 

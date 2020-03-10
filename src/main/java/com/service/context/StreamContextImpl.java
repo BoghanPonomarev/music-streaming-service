@@ -76,6 +76,7 @@ public class StreamContextImpl implements StreamContext {
     StreamPortion streamPortion = streamPortions.poll();
     while (streamPortion != null) {
       streamPortion.setId(++nextStreamPortionId);
+      streamPortion.setStreamName("testStream");//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       contentStreamPortions.put(nextStreamPortionId, streamPortion);
 
       streamPortion = streamPortions.poll();

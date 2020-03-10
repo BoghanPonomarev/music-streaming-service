@@ -22,5 +22,12 @@ public class StreamManagementController {
     return ResponseEntity.ok("OK");
   }
 
+  @ResponseBody
+  @PostMapping(value = "/streams/{streamName}/play")
+  public ResponseEntity<String> startStream(@PathVariable("streamName") String streamName) {
+    streamManagementService.startStream(streamName);
+    return ResponseEntity.ok("OK");
+  }
+
 
 }
