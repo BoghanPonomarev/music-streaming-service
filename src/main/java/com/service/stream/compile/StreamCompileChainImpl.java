@@ -36,7 +36,7 @@ public class StreamCompileChainImpl implements StreamCompileChain {
         String loopedVideoWithAudio = executeWithParams(silentVideoFilePath, firstAudioElement, mergeLoopedVideoBeforeAudioFinishCommand, "mp4");
 
         String resultFilePath = compileStream(streamCompileContext.getStreamName(), loopedVideoWithAudio, streamCompileContext.getIteration());
-        cleanResources(silentVideoFilePath, loopedVideoWithAudio);
+        cleanResources(silentVideoFilePath, loopedVideoWithAudio, firstAudioElement);
         return resultFilePath;
     }
 
