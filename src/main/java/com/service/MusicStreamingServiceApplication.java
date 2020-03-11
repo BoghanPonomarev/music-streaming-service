@@ -1,7 +1,5 @@
 package com.service;
 
-import com.service.entity.*;
-import com.service.executor.FileModificationCommandExecutor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;

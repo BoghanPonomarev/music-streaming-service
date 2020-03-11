@@ -3,13 +3,11 @@ package com.service.context;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
+import com.service.entity.StreamPortion;
 import com.service.stream.starter.StreamStarter;
 import com.service.system.SystemResourceCleaner;
-import com.service.entity.StreamPortion;
 import com.service.util.LockUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Map;
@@ -22,8 +20,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
-@Component
-@RequiredArgsConstructor
 @SuppressWarnings("UnstableApiUsage")
 public class StreamContextImpl implements StreamContext {
 
@@ -33,12 +29,20 @@ public class StreamContextImpl implements StreamContext {
   private Lock appendPortionsLock = new ReentrantLock();
   private Lock startLock = new ReentrantLock();
 
+  private String streamName;
   private boolean isAlive = false;
   private long currentStreamIteration = 1;
   private long totalStreamPortionsQuantity;
 
   private RangeMap<Long, StreamSegment> contentSegments = TreeRangeMap.create();
   private final SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
+
+  public StreamContextImpl(String streamName, long currentStreamIteration, StreamStarter streamStarter, SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner) {
+    this.streamName = streamName;
+    this.currentStreamIteration = currentStreamIteration;
+    this.streamStarter = streamStarter;
+    this.systemResourceCleaner = systemResourceCleaner;
+  }
 
   @Override
   public void startStream() {
@@ -77,9 +81,11 @@ public class StreamContextImpl implements StreamContext {
     Map<Long, StreamPortion> contentStreamPortions = new ConcurrentHashMap<>();
 
     StreamPortion streamPortion = streamPortions.poll();
+
+    if(streamPortion != null) streamPortion.setFirstSegmentPortion(true);
     while (streamPortion != null) {
       streamPortion.setId(++nextStreamPortionId);
-      streamPortion.setStreamName("testStream");//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      streamPortion.setStreamName(streamName);
       contentStreamPortions.put(nextStreamPortionId, streamPortion);
 
       streamPortion = streamPortions.poll();
@@ -100,8 +106,8 @@ public class StreamContextImpl implements StreamContext {
   }
 
   @Override
-  public long getStreamIteration() {
-    return currentStreamIteration;
+  public String getStreamName() {
+    return streamName;
   }
 
   class StreamSegment {
@@ -137,7 +143,7 @@ public class StreamContextImpl implements StreamContext {
       StreamSegment nextSegment = contentSegments.get(currentStreamIteration);
 
       if (nextSegment != null) {
-        streamStarter.continueStream();
+        streamStarter.compileNewPortion(StreamContextImpl.this);
         nextSegment.startSegmentStream();
       }
       iterationScheduler.shutdownNow();

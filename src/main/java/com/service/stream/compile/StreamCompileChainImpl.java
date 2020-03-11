@@ -1,7 +1,7 @@
 package com.service.stream.compile;
 
-import com.service.entity.FileModificationCommand;
-import com.service.executor.FileModificationCommandExecutor;
+import com.service.entity.TerminalCommand;
+import com.service.executor.TerminalCommandExecutorImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
@@ -22,12 +22,12 @@ import java.util.UUID;
 public class StreamCompileChainImpl implements StreamCompileChain {
 
 
-    private final FileModificationCommand videoToStreamCommand;
-    private final FileModificationCommand concatenateAudiosCommand;
-    private final FileModificationCommand removeAudioFromFileCommand;
-    private final FileModificationCommand mergeLoopedVideoBeforeAudioFinishCommand;
+    private final TerminalCommand videoToStreamCommand;
+    private final TerminalCommand concatenateAudiosCommand;
+    private final TerminalCommand removeAudioFromFileCommand;
+    private final TerminalCommand mergeLoopedVideoBeforeAudioFinishCommand;
 
-    private final FileModificationCommandExecutor commandExecutor;
+    private final TerminalCommandExecutorImpl commandExecutor;
 
     @Override
     public String compileStream(StreamCompileContext streamCompileContext) {
@@ -53,13 +53,13 @@ public class StreamCompileChainImpl implements StreamCompileChain {
         return mainFilePath;
     }
 
-    private String executeWithParams(String firstParamFile, String secondParamFile, FileModificationCommand targetCommand, String outFileExtension) {
+    private String executeWithParams(String firstParamFile, String secondParamFile, TerminalCommand targetCommand, String outFileExtension) {
         String outputFileName = "src/main/resources/temp/" + UUID.randomUUID() + "." + outFileExtension;
         targetCommand.setOutputFile(outputFileName);
         targetCommand.setFirstInputFile(firstParamFile);
         targetCommand.setSecondInputFile(secondParamFile);
 
-        commandExecutor.executeCommand(targetCommand);
+        commandExecutor.execute(targetCommand);
         return outputFileName;
     }
 
@@ -71,7 +71,7 @@ public class StreamCompileChainImpl implements StreamCompileChain {
         videoToStreamCommand.setOutputFile(mainStreamFilePath);
         videoToStreamCommand.setFirstInputFile(sourceFile);
 
-        commandExecutor.executeCommand(videoToStreamCommand);
+        commandExecutor.execute(videoToStreamCommand);
         return mainStreamFilePath;
     }
 

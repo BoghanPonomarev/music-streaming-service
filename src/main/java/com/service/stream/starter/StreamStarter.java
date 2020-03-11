@@ -7,5 +7,5 @@ public interface StreamStarter {
 
     StreamContext startStream(String streamName);
 
-    void continueStream();
+    void compileNewPortion(StreamContext streamContext);
 }

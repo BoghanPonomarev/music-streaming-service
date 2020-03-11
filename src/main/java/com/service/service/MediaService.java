@@ -4,8 +4,8 @@ import java.io.File;
 
 public interface MediaService {
 
-    File getAnimationPart(Long id);
+    File getAnimation(Long id);
 
-    File getAudioPart(Long id);
+    File getAudio(Long id);
 
 }

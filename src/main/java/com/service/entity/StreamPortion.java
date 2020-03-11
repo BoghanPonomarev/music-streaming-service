@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 public class StreamPortion {
 
   private Long id;
-
   private String streamName;
+
   private String filePath;
   private Double duration;
+  private boolean isFirstSegmentPortion;
 
 }

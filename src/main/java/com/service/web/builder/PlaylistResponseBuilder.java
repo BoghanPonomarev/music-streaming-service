@@ -8,7 +8,7 @@ public class PlaylistResponseBuilder implements ResponseBuilder<String, StreamPo
 
     @Override
     public String buildResponse(StreamPortion streamPortion) {
-        String s2 = (streamPortion.getId() == 4) ? "#EXT-X-DISCONTINUITY\n" : "";
+        String streamSegmentDecimeter = (streamPortion.isFirstSegmentPortion()) ? "#EXT-X-DISCONTINUITY\n" : "";
 
         if (streamPortion.getId() < 2) {
             return "#EXTM3U\n" +
@@ -24,7 +24,7 @@ public class PlaylistResponseBuilder implements ResponseBuilder<String, StreamPo
                 "#EXT-X-TARGETDURATION:20\n" +
                 "#EXT-X-MEDIA-SEQUENCE:" + streamPortion.getId() + "\n" +
                 "#EXTINF:" + streamPortion.getDuration() + ",\n" +
-                "http://localhost:8080/api/v1/streams/" + streamPortion.getStreamName() + "/ts/" + (streamPortion.getId() - 1) + "\n" + s2 +
+                "http://localhost:8080/api/v1/streams/" + streamPortion.getStreamName() + "/ts/" + (streamPortion.getId() - 1) + "\n" + streamSegmentDecimeter +
                 "#EXTINF:" + streamPortion.getDuration() + ",\n" +
                 "http://localhost:8080/api/v1/streams/" + streamPortion.getStreamName() + "/ts/" + streamPortion.getId();
     }

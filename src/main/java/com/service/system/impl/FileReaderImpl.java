@@ -1,5 +1,6 @@
 package com.service.system.impl;
 
+import com.service.exception.FileSystemOperationException;
 import com.service.system.FileReader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,8 @@ public class FileReaderImpl implements FileReader {
       return String.join("", Files.readAllLines(Paths.get(filePath)));
     } catch (IOException ex) {
       log.error("Failed during file reading", ex);
-      //TODO throw custom ex
+      throw new FileSystemOperationException("Failed during file reading", ex);
     }
-    return null;
   }
 
 

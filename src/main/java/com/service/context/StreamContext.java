@@ -8,12 +8,12 @@ public interface StreamContext {
 
   void startStream();
 
+  String getStreamName();
+
   void appendStreamPortions(Queue<StreamPortion> streamPortions);
 
   StreamPortion getStreamPortion(Long portionId);
 
   StreamPortion getCurrentStreamPortion();
-
-  long getStreamIteration();
 
 }

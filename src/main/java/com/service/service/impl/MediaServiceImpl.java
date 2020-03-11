@@ -1,8 +1,6 @@
 package com.service.service.impl;
 
 import com.service.dao.AudioRepository;
-import com.service.dao.PlaylistRepository;
-import com.service.dao.StreamRepository;
 import com.service.dao.VideoRepository;
 import com.service.service.MediaService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +16,12 @@ public class MediaServiceImpl implements MediaService {
     private final VideoRepository videoRepository;
 
     @Override
-    public File getAnimationPart(Long id) {
+    public File getAnimation(Long id) {
         return new File(videoRepository.getOne(id).getFilePath());
     }
 
     @Override
-    public File getAudioPart(Long id) {
+    public File getAudio(Long id) {
         return new File(audioRepository.getOne(id).getFilePath());
     }
 

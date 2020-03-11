@@ -1,15 +1,12 @@
 package com.service.service;
 
 import com.service.web.dto.PlaylistDto;
-import com.service.web.dto.StreamHeaderDto;
+import com.service.web.dto.BaseStreamInfoDto;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
 public interface PlaylistManagementService {
-
-  Long createStream(String streamName);
 
   Long updateVideo(String streamName, InputStream videoInputStream, String originalFileName);
 
@@ -19,5 +16,5 @@ public interface PlaylistManagementService {
 
   PlaylistDto getPlaylist(String streamName);
 
-    List<StreamHeaderDto> getPlaylistsNames();
+  List<BaseStreamInfoDto> getPlaylistsNames();
 }

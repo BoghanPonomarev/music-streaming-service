@@ -1,7 +1,6 @@
 package com.service.dao;
 
-import com.service.entity.Audio;
-import com.service.entity.Video;
+import com.service.entity.model.Audio;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

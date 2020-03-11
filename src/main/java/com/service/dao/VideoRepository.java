@@ -1,7 +1,7 @@
 package com.service.dao;
 
-import com.service.entity.Stream;
-import com.service.entity.Video;
+
+import com.service.entity.model.Video;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

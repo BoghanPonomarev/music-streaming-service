@@ -1,19 +1,17 @@
 package com.service.service.impl;
 
 import com.service.dao.AudioRepository;
-import com.service.dao.PlaylistRepository;
 import com.service.dao.StreamRepository;
 import com.service.dao.VideoRepository;
-import com.service.entity.Audio;
-import com.service.entity.Playlist;
-import com.service.entity.Stream;
-import com.service.entity.Video;
+import com.service.entity.model.Audio;
+import com.service.entity.model.Stream;
+import com.service.entity.model.Video;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.exception.EntityNotFoundException;
 import com.service.service.PlaylistManagementService;
 import com.service.web.dto.MediaDto;
 import com.service.web.dto.PlaylistDto;
-import com.service.web.dto.StreamHeaderDto;
+import com.service.web.dto.BaseStreamInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -36,33 +34,8 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
   private static final String STREAM_SOURCES_FILE_PATH = "src/main/resources/stream-source";
 
   private final AudioRepository audioRepository;
-  private final PlaylistRepository playlistRepository;
   private final StreamRepository streamRepository;
   private final VideoRepository videoRepository;
-
-  @Override
-  @Transactional
-  public Long createStream(String streamName) {
-    Playlist newPlaylist = new Playlist();
-    playlistRepository.save(newPlaylist);
-
-    Stream newStream = new Stream();
-    newStream.setName(streamName);
-    newStream.setPlaylistId(newPlaylist.getId());
-    newStream.setStreamStatusId(StreamStatusConst.CREATED.getId());
-
-    Stream savedStream = streamRepository.save(newStream);
-    createStreamDirectory(streamName);
-    return savedStream.getId();
-  }
-
-  private void createStreamDirectory(String streamName) {
-    try {
-      Files.createDirectory(Paths.get(STREAM_SOURCES_FILE_PATH + "/" + streamName));
-    } catch (IOException ex) {
-      log.error("Stream directory creation failed", ex);
-    }
-  }
 
   @Override
   @Transactional
@@ -165,14 +138,14 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
   }
 
   @Override
-  public List<StreamHeaderDto> getPlaylistsNames() {
+  public List<BaseStreamInfoDto> getPlaylistsNames() {
     return streamRepository.findAll().stream()
             .map(this::extractStreamHeader)
             .collect(Collectors.toList());
   }
 
-  private StreamHeaderDto extractStreamHeader(Stream stream) {
+  private BaseStreamInfoDto extractStreamHeader(Stream stream) {
     StreamStatusConst streamStatus = StreamStatusConst.valueOf(stream.getStreamStatusId());
-    return new StreamHeaderDto(stream.getName(), streamStatus.getValue());
+    return new BaseStreamInfoDto(stream.getName(), streamStatus.getValue());
   }
 }
