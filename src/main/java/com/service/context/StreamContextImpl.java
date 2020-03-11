@@ -3,6 +3,7 @@ package com.service.context;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
+import com.service.stream.starter.StreamStarter;
 import com.service.system.SystemResourceCleaner;
 import com.service.entity.StreamPortion;
 import com.service.util.LockUtils;
@@ -23,17 +24,19 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("UnstableApiUsage")
 public class StreamContextImpl implements StreamContext {
 
+  private final StreamStarter streamStarter; //TODo
+
   private static final int DEFAULT_AMONG_ITERATION_DELAY = 10;
-  private Lock addLock = new ReentrantLock();
+  private Lock appendPortionsLock = new ReentrantLock();
   private Lock startLock = new ReentrantLock();
 
   private boolean isAlive = false;
   private long currentStreamIteration = 1;
   private long totalStreamPortionsQuantity;
 
-  @SuppressWarnings("UnstableApiUsage")
   private RangeMap<Long, StreamSegment> contentSegments = TreeRangeMap.create();
   private final SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
 
@@ -50,7 +53,7 @@ public class StreamContextImpl implements StreamContext {
 
   @Override
   public void appendStreamPortions(Queue<StreamPortion> streamPortions) {
-    LockUtils.withLock(addLock, () -> {
+    LockUtils.withLock(appendPortionsLock, () -> {
       StreamSegment newSegment = convertToSegment(streamPortions);
 
       Range<Long> segmentIdsRange = Range.closed(totalStreamPortionsQuantity + 1, totalStreamPortionsQuantity + newSegment.portionsQuantity);
@@ -96,6 +99,11 @@ public class StreamContextImpl implements StreamContext {
     return getStreamPortion(currentStreamIteration);
   }
 
+  @Override
+  public long getStreamIteration() {
+    return currentStreamIteration;
+  }
+
   class StreamSegment {
 
     private long portionsLeft;
@@ -129,6 +137,7 @@ public class StreamContextImpl implements StreamContext {
       StreamSegment nextSegment = contentSegments.get(currentStreamIteration);
 
       if (nextSegment != null) {
+        streamStarter.continueStream();
         nextSegment.startSegmentStream();
       }
       iterationScheduler.shutdownNow();

@@ -27,7 +27,7 @@ public class StreamCompilerImpl implements StreamCompiler {
     private final AudioRepository audioRepository;
 
     @Override
-    public void compileStream(String streamName) {
+    public void startCompileStream(String streamName) {
         Stream targetStream = getStreamWithStatusCheck(streamName, StreamStatusConst.CREATED);
 
         List<Video> streamVideos = videoRepository.findAllByPlaylistId(targetStream.getPlaylistId());
@@ -51,5 +51,22 @@ public class StreamCompilerImpl implements StreamCompiler {
 
         return targetStream;
     }
+
+    @Override
+    public void iterateCompileStream(String streamName) {
+        Stream targetStream = getStreamWithStatusCheck(streamName, StreamStatusConst.PLAYING);
+
+        List<Video> streamVideos = videoRepository.findAllByPlaylistId(targetStream.getPlaylistId());
+        List<String> streamAudiosPathList = audioRepository.findAllByPlaylistId(targetStream.getPlaylistId())
+                .stream().map(Audio::getFilePath).collect(Collectors.toList());
+
+        long newCompilationIteration = targetStream.getCompilationIteration() + 1L;
+        StreamCompileContext streamCompileContext = new StreamCompileContext((int) newCompilationIteration, streamName, streamVideos.get(0).getFilePath(), streamAudiosPathList);
+        streamCompileChain.compileStream(streamCompileContext);
+
+        targetStream.setCompilationIteration(newCompilationIteration);
+        streamRepository.save(targetStream);
+    }
+
 
 }

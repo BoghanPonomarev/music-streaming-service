@@ -14,4 +14,6 @@ public interface StreamContext {
 
   StreamPortion getCurrentStreamPortion();
 
+  long getStreamIteration();
+
 }

@@ -27,11 +27,12 @@ public class StreamManagementServiceImpl implements StreamManagementService {
   public void startStream(String streamName) {
     StreamContext newStreamContext = streamStarter.startStream(streamName);
     streamContextMap.put(streamName, newStreamContext);
+    streamCompiler.iterateCompileStream(streamName);
   }
 
   @Override
   public void compileStream(String streamName) {
-    streamCompiler.compileStream(streamName);
+    streamCompiler.startCompileStream(streamName);
   }
 
 }
