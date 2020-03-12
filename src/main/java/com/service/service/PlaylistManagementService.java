@@ -1,5 +1,6 @@
 package com.service.service;
 
+import com.service.web.dto.BaseStreamInfoFilterDto;
 import com.service.web.dto.PlaylistDto;
 import com.service.web.dto.BaseStreamInfoDto;
 
@@ -16,5 +17,5 @@ public interface PlaylistManagementService {
 
   PlaylistDto getPlaylist(String streamName);
 
-  List<BaseStreamInfoDto> getPlaylistsNames();
+  List<BaseStreamInfoDto> getPlaylistsNames(BaseStreamInfoFilterDto baseStreamInfoFilterDto);
 }

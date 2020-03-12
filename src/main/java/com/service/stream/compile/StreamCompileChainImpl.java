@@ -21,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StreamCompileChainImpl implements StreamCompileChain {
 
-
+    private final TerminalCommand extractImageCommand;//TODo remove to local
     private final TerminalCommand videoToStreamCommand;
     private final TerminalCommand concatenateAudiosCommand;
     private final TerminalCommand removeAudioFromFileCommand;
@@ -31,12 +31,13 @@ public class StreamCompileChainImpl implements StreamCompileChain {
 
     @Override
     public String compileStream(StreamCompileContext streamCompileContext) {
-        String firstAudioElement = concatenateAudios(streamCompileContext.getAudioFilePathList());
-        String silentVideoFilePath = executeWithParams(streamCompileContext.getVideoFilePath(), firstAudioElement, removeAudioFromFileCommand, "mp4");
-        String loopedVideoWithAudio = executeWithParams(silentVideoFilePath, firstAudioElement, mergeLoopedVideoBeforeAudioFinishCommand, "mp4");
+        generateImage(streamCompileContext.getStreamName(), streamCompileContext.getVideoFilePath());
+        String concatenatedAudios = concatenateAudios(streamCompileContext.getAudioFilePathList());
+        String silentVideoFilePath = executeWithParams(streamCompileContext.getVideoFilePath(), concatenatedAudios, removeAudioFromFileCommand, "mp4");
+        String loopedVideoWithAudio = executeWithParams(silentVideoFilePath, concatenatedAudios, mergeLoopedVideoBeforeAudioFinishCommand, "mp4");
 
         String resultFilePath = compileStream(streamCompileContext.getStreamName(), loopedVideoWithAudio, streamCompileContext.getIteration());
-        cleanResources(silentVideoFilePath, loopedVideoWithAudio, firstAudioElement);
+        cleanResources(silentVideoFilePath, loopedVideoWithAudio, concatenatedAudios);
         return resultFilePath;
     }
 
@@ -73,6 +74,15 @@ public class StreamCompileChainImpl implements StreamCompileChain {
 
         commandExecutor.execute(videoToStreamCommand);
         return mainStreamFilePath;
+    }
+
+    private String generateImage(String streamName, String videoPath) {
+        String resultGenerationFile = "src/main/resources/stream-source/" + streamName + "/" + streamName + "-pr.jpg";
+        extractImageCommand.setOutputFile(resultGenerationFile);
+        extractImageCommand.setFirstInputFile(videoPath);
+
+        commandExecutor.execute(extractImageCommand);
+        return resultGenerationFile;
     }
 
     private void createCompilationDirectory(String resultCompilationDirectory) {

@@ -9,6 +9,7 @@ import com.service.entity.model.Video;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.exception.EntityNotFoundException;
 import com.service.service.PlaylistManagementService;
+import com.service.web.dto.BaseStreamInfoFilterDto;
 import com.service.web.dto.MediaDto;
 import com.service.web.dto.PlaylistDto;
 import com.service.web.dto.BaseStreamInfoDto;
@@ -138,9 +139,17 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
   }
 
   @Override
-  public List<BaseStreamInfoDto> getPlaylistsNames() {
-    return streamRepository.findAll().stream()
-            .map(this::extractStreamHeader)
+  public List<BaseStreamInfoDto> getPlaylistsNames(BaseStreamInfoFilterDto baseStreamInfoFilterDto) {
+    java.util.stream.Stream<BaseStreamInfoDto> baseStream = streamRepository.findAll().stream()
+            .map(this::extractStreamHeader);
+
+    List<String> allowedStatuses = baseStreamInfoFilterDto.getAllowedStatuses();
+    if(allowedStatuses != null && !allowedStatuses.isEmpty()) {
+      return baseStream
+              .filter(baseStreamInfoDto -> allowedStatuses.contains(baseStreamInfoDto.getStatus()))
+              .collect(Collectors.toList());
+    }
+    return baseStream
             .collect(Collectors.toList());
   }
 

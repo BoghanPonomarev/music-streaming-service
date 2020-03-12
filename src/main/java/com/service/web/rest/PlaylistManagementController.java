@@ -3,6 +3,7 @@ package com.service.web.rest;
 import com.service.service.MediaService;
 import com.service.service.PlaylistManagementService;
 import com.service.service.StreamManagementService;
+import com.service.web.dto.BaseStreamInfoFilterDto;
 import com.service.web.dto.PlaylistDto;
 import com.service.web.dto.ResourceCreationResponse;
 import com.service.web.dto.BaseStreamInfoDto;
@@ -71,8 +72,8 @@ public class PlaylistManagementController {
 
   @ResponseBody
   @GetMapping(value = "/playlists", produces = "application/json")
-  public ResponseEntity<List<BaseStreamInfoDto>> getPlaylistsNames() {
-    return ResponseEntity.ok(playlistManagementService.getPlaylistsNames());
+  public ResponseEntity<List<BaseStreamInfoDto>> getPlaylistsBaseInfos(BaseStreamInfoFilterDto baseStreamInfoFilterDto) {
+    return ResponseEntity.ok(playlistManagementService.getPlaylistsNames(baseStreamInfoFilterDto));
   }
 
   @ResponseBody

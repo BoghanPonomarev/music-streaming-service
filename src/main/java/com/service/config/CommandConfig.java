@@ -15,6 +15,15 @@ public class CommandConfig {
   @Bean
   @Order(1)
   @Scope("prototype")
+  @Qualifier("extractImageCommand")
+  public TerminalCommand extractImageCommand() {
+    String extractImageCommand= "%s -y -i %s -qscale:v 4 -frames:v 1 %s";
+    return new TerminalCommand(extractImageCommand, COMMAND_WORD_PATH);
+  }
+
+  @Bean
+  @Order(2)
+  @Scope("prototype")
   @Qualifier("removeAudioFromFileCommand")
   public TerminalCommand removeAudioFromFileCommand() {
     String removeAudioFromFileCommand = "%s -i %s -i %s -an -acodec copy -vcodec copy %s";
@@ -22,7 +31,7 @@ public class CommandConfig {
   }
 
   @Bean
-  @Order(2)
+  @Order(3)
   @Scope("prototype")
   @Qualifier("concatenateAudiosCommand")
   public TerminalCommand concatenateAudiosCommand() {
@@ -31,7 +40,7 @@ public class CommandConfig {
   }
 
   @Bean
-  @Order(3)
+  @Order(4)
   @Scope("prototype")
   @Qualifier("mergeLoopedVideoBeforeAudioFinishCommand")
   public TerminalCommand mergeLoopedVideoBeforeAudioFinishCommand() {
@@ -40,7 +49,7 @@ public class CommandConfig {
   }
 
   @Bean
-  @Order(4)
+  @Order(5)
   @Scope("prototype")
   @Qualifier("videoToStreamCommand")
   public TerminalCommand videoToStreamCommand() {

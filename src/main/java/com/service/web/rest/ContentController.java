@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+
 
 @Slf4j
 @RestController
@@ -35,6 +37,12 @@ public class ContentController {
   public ResponseEntity<FileSystemResource> getTs(@PathVariable("streamName") String streamName, @PathVariable("id") Long tsId) {
     StreamContext streamContext = streamManagementService.getStreamContext(streamName);
     File file = new File(streamContext.getStreamPortion(tsId).getFilePath());
+    return ResponseEntity.ok(new FileSystemResource(file));
+  }
+
+  @GetMapping(value = "/streams/{streamName}/pr", produces = MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<FileSystemResource> getImage(@PathVariable("streamName") String streamName) {
+    File file = new File("src/main/resources/stream-source/"+streamName+"/"+ streamName + "-pr.jpg");
     return ResponseEntity.ok(new FileSystemResource(file));
   }
 
