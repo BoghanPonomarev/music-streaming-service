@@ -82,7 +82,7 @@ public class StreamContextImpl implements StreamContext {
 
     StreamPortion streamPortion = streamPortions.poll();
 
-    if(streamPortion != null) streamPortion.setFirstSegmentPortion(true);
+    if(streamPortion != null) streamPortion.setFirstPortionInSegment(true);
     while (streamPortion != null) {
       streamPortion.setId(++nextStreamPortionId);
       streamPortion.setStreamName(streamName);

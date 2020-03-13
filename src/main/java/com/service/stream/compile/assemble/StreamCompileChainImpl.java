@@ -1,7 +1,8 @@
-package com.service.stream.compile;
+package com.service.stream.compile.assemble;
 
 import com.service.entity.TerminalCommand;
-import com.service.executor.TerminalCommandExecutorImpl;
+import com.service.executor.TerminalCommandExecutor;
+import com.service.stream.compile.StreamCompileContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Component
 @Scope("prototype")
 @RequiredArgsConstructor
-public class StreamCompileChainImpl implements StreamCompileChain {
+public class StreamCompileChainImpl{
 
     private final TerminalCommand extractImageCommand;//TODo remove to local
     private final TerminalCommand videoToStreamCommand;
@@ -27,9 +28,8 @@ public class StreamCompileChainImpl implements StreamCompileChain {
     private final TerminalCommand removeAudioFromFileCommand;
     private final TerminalCommand mergeLoopedVideoBeforeAudioFinishCommand;
 
-    private final TerminalCommandExecutorImpl commandExecutor;
+    private final TerminalCommandExecutor commandExecutor;
 
-    @Override
     public String compileStream(StreamCompileContext streamCompileContext) {
         generateImage(streamCompileContext.getStreamName(), streamCompileContext.getVideoFilePath());
         String concatenatedAudios = concatenateAudios(streamCompileContext.getAudioFilePathList());

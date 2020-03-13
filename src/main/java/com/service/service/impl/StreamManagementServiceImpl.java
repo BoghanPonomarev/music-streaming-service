@@ -1,16 +1,14 @@
 package com.service.service.impl;
 
 import com.service.context.StreamContext;
-import com.service.context.StreamContextImpl;
 import com.service.dao.PlaylistRepository;
 import com.service.dao.StreamRepository;
 import com.service.entity.StreamPortion;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.entity.model.Playlist;
 import com.service.entity.model.Stream;
-import com.service.exception.EntityNotFoundException;
 import com.service.service.StreamManagementService;
-import com.service.stream.compile.StreamCompiler;
+import com.service.stream.compile.StreamCompileStrategy;
 import com.service.stream.starter.StreamStarter;
 import com.service.system.SystemResourceCleaner;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +32,7 @@ public class StreamManagementServiceImpl implements StreamManagementService {
 
   private Map<String, StreamContext> streamContextMap = new HashMap<>();
   private final SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
-  private final StreamCompiler streamCompiler;
+  private final StreamCompileStrategy streamCompiler;
   private final StreamStarter streamStarter;
 
   private final PlaylistRepository playlistRepository;
@@ -78,7 +76,7 @@ public class StreamManagementServiceImpl implements StreamManagementService {
 
   @Override
   public void compileStream(String streamName) {
-    streamCompiler.startCompileStream(streamName);
+    streamCompiler.compileStream(streamName);
   }
 
 }

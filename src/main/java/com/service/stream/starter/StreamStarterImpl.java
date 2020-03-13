@@ -8,7 +8,7 @@ import com.service.entity.StreamPortion;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.exception.EntityNotFoundException;
 import com.service.parser.Parser;
-import com.service.stream.compile.StreamCompiler;
+import com.service.stream.compile.StreamCompileStrategy;
 import com.service.system.FileReader;
 import com.service.system.SystemResourceCleaner;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class StreamStarterImpl implements StreamStarter{
     private final FileReader fileReader;
 
 
-    private final StreamCompiler streamCompiler;
+    private final StreamCompileStrategy streamCompiler;
 
     private final Parser<String, Queue<StreamPortion>> parser;
 

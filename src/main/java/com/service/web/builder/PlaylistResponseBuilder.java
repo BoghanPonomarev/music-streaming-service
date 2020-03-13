@@ -8,7 +8,7 @@ public class PlaylistResponseBuilder implements ResponseBuilder<String, StreamPo
 
     @Override
     public String buildResponse(StreamPortion streamPortion) {
-        String streamSegmentDecimeter = (streamPortion.isFirstSegmentPortion()) ? "#EXT-X-DISCONTINUITY\n" : "";
+        String streamSegmentDecimeter = (streamPortion.isFirstPortionInSegment()) ? "#EXT-X-DISCONTINUITY\n" : "";
 
         if (streamPortion.getId() < 2) {
             return "#EXTM3U\n" +

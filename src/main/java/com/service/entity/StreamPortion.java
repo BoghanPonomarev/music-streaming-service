@@ -14,6 +14,6 @@ public class StreamPortion {
 
   private String filePath;
   private Double duration;
-  private boolean isFirstSegmentPortion;
+  private boolean isFirstPortionInSegment;
 
 }
