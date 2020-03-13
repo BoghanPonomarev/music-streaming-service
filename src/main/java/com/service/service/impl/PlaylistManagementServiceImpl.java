@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PlaylistManagementServiceImpl implements PlaylistManagementService {
+public class PlaylistManagementServiceImpl implements PlaylistManagementService { //TODO Refactoring
 
   private static final String STREAM_SOURCES_FILE_PATH = "src/main/resources/stream-source";
 

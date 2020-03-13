@@ -9,7 +9,7 @@ import com.service.entity.model.Video;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.exception.EntityNotFoundException;
 import com.service.exception.IllegalStreamStateException;
-import com.service.stream.compile.assemble.StreamFilesGenerationChain;
+import com.service.stream.generation.StreamFilesGenerationChain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

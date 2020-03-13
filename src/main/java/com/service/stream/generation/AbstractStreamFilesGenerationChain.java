@@ -1,4 +1,4 @@
-package com.service.stream.compile.assemble;
+package com.service.stream.generation;
 
 import com.service.entity.TerminalCommand;
 import com.service.executor.TerminalCommandExecutor;
@@ -9,8 +9,6 @@ import org.apache.tomcat.util.http.fileupload.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 @Slf4j

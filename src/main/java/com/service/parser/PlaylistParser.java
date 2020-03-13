@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
 @Component
 public class PlaylistParser implements Parser<String, Queue<StreamPortion>> {
 
+    private static final int REGEXP_DURATION_GROUP_POINTER = 1;
+    private static final int REGEXP_FILE_PATH_GROUP_POINTER = 2;
+
     private Pattern transportStreamChunkPattern = Pattern.compile("#EXTINF:(\\d+\\.?\\d+),(.+?\\.ts)");
 
     @Override
@@ -29,8 +32,8 @@ public class PlaylistParser implements Parser<String, Queue<StreamPortion>> {
     }
 
     private StreamPortion extractTransportStreamPortion(Matcher transportStreamChunkMatcher) {
-        String duration = transportStreamChunkMatcher.group(1);
-        String filePath = transportStreamChunkMatcher.group(2);
+        String duration = transportStreamChunkMatcher.group(REGEXP_DURATION_GROUP_POINTER);
+        String filePath = transportStreamChunkMatcher.group(REGEXP_FILE_PATH_GROUP_POINTER);
 
         StreamPortion resultStreamPortion = new StreamPortion();
         resultStreamPortion.setDuration(Double.valueOf(duration));

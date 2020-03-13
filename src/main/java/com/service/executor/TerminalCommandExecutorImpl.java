@@ -21,13 +21,18 @@ public class TerminalCommandExecutorImpl implements TerminalCommandExecutor {
 
         CommandLine commandLine = CommandLine.parse(textTerminalCommand);
         try {
-            DefaultExecutor executor = new DefaultExecutor();
-            int resultCode = executor.execute(commandLine);
-            log.info("Command {} finished with code - {}", commandLine, resultCode);
+            executeCommandLine(commandLine);
         } catch (IOException ex) {
             log.error("Command execution failed, command - {}", commandLine, ex);
             throw new CommandExecutionException("Command execution failed", ex);
         }
+    }
+
+    private void executeCommandLine(CommandLine commandLine) throws IOException {
+        DefaultExecutor executor = new DefaultExecutor();
+        int resultCode = executor.execute(commandLine);
+
+        log.info("Command {} finished with code - {}", commandLine, resultCode);
     }
 
 }

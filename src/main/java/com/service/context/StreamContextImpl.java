@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @SuppressWarnings("UnstableApiUsage")
 public class StreamContextImpl implements StreamContext {
 
-  private final StreamStarter streamStarter; //TODo
+  private final StreamStarter streamStarter; //TODO Should be smth else, not starter
 
   private static final int DEFAULT_AMONG_ITERATION_DELAY = 10;
   private Lock appendPortionsLock = new ReentrantLock();

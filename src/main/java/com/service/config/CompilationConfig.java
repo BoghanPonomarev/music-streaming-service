@@ -1,13 +1,13 @@
 package com.service.config;
 
 import com.service.executor.TerminalCommandExecutor;
-import com.service.stream.compile.assemble.StreamFilesGenerationChain;
-import com.service.stream.compile.assemble.impl.*;
+import com.service.stream.generation.StreamFilesGenerationChain;
+import com.service.stream.generation.impl.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class CommandConfig {
+public class CompilationConfig {
 
   @Bean
   public StreamFilesGenerationChain streamFilesGenerationChain(TerminalCommandExecutor terminalCommandExecutor) {

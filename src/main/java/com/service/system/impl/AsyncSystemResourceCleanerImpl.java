@@ -21,10 +21,10 @@ public class AsyncSystemResourceCleanerImpl implements SystemResourceCleaner<Col
 
   @Override
   public void cleanStreamResource(Collection<StreamPortion> resources) {
-    cleanExecutorService.execute(() -> cleanResourcesSync(resources));
+    cleanExecutorService.execute(() -> cleanResourceSynchronously(resources));
   }
 
-  private void cleanResourcesSync(Collection<StreamPortion> resources) {
+  private void cleanResourceSynchronously(Collection<StreamPortion> resources) {
     String potentialCommonDirectoryFilePath = extractPotentialCommonDirectoryPath(resources);
 
     if (potentialCommonDirectoryFilePath != null && isCommonDirectory(resources, potentialCommonDirectoryFilePath)) {

@@ -1,10 +1,10 @@
-package com.service.stream.compile.assemble.impl;
+package com.service.stream.generation.impl;
 
 import com.service.entity.TerminalCommand;
 import com.service.executor.TerminalCommandExecutor;
 import com.service.stream.compile.StreamCompileContext;
-import com.service.stream.compile.assemble.AbstractStreamFilesGenerationChain;
-import com.service.stream.compile.assemble.StreamFilesGenerationChain;
+import com.service.stream.generation.AbstractStreamFilesGenerationChain;
+import com.service.stream.generation.StreamFilesGenerationChain;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
