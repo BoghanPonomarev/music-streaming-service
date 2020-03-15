@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public abstract class AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    protected static final String COMMAND_WORD_PATH = "src/main/resources/ffmpeg-api/bin/ffmpeg";
+    protected static final String COMMAND_WORD_PATH = "ffmpeg";
 
     protected TerminalCommandExecutor commandExecutor;
     protected StreamFilesGenerationChain nextChainMember;

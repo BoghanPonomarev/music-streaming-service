@@ -29,6 +29,7 @@ public class AsyncSystemResourceCleanerImpl implements SystemResourceCleaner<Col
 
     if (potentialCommonDirectoryFilePath != null && isCommonDirectory(resources, potentialCommonDirectoryFilePath)) {
       deleteDirectory(potentialCommonDirectoryFilePath);
+      log.info("Directory path - {} was deleted", potentialCommonDirectoryFilePath);
     } else {
       resources.forEach(this::cleanSingleStreamPortion);
     }
@@ -66,6 +67,7 @@ public class AsyncSystemResourceCleanerImpl implements SystemResourceCleaner<Col
     try {
       File streamPortionFile = new File(streamPortion.getFilePath());
       FileUtils.forceDelete(streamPortionFile);
+      log.info("File with path - {} was deleted", streamPortionFile.getCanonicalPath());
     } catch (IOException e) {
       log.error("Failed during file removing, stream part - {}", streamPortion);
     }

@@ -4,7 +4,7 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
 import com.service.entity.StreamPortion;
-import com.service.stream.starter.StreamStarter;
+import com.service.stream.starter.StreamContentInjector;
 import com.service.system.SystemResourceCleaner;
 import com.service.util.LockUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,11 +20,12 @@ import java.util.concurrent.locks.ReentrantLock;
 @SuppressWarnings("UnstableApiUsage")
 public class StreamContextImpl implements StreamContext {
 
-  private final StreamStarter streamStarter; //TODO Should be smth else, not starter
-
   private static final int DEFAULT_AMONG_ITERATION_DELAY = 10;
   private Lock appendPortionsLock = new ReentrantLock();
   private Lock startLock = new ReentrantLock();
+
+  private final ExecutorService contentInjectionExecutorService = Executors.newFixedThreadPool(3);
+  private final StreamContentInjector streamContentInjector;
 
   private String streamName;
   private boolean isAlive = false;
@@ -37,10 +35,10 @@ public class StreamContextImpl implements StreamContext {
   private RangeMap<Long, StreamSegment> contentSegments = TreeRangeMap.create();
   private final SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
 
-  public StreamContextImpl(String streamName, long currentStreamIteration, StreamStarter streamStarter, SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner) {
+  public StreamContextImpl(String streamName, long currentStreamIteration, StreamContentInjector streamContentInjector, SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner) {
     this.streamName = streamName;
     this.currentStreamIteration = currentStreamIteration;
-    this.streamStarter = streamStarter;
+    this.streamContentInjector = streamContentInjector;
     this.systemResourceCleaner = systemResourceCleaner;
   }
 
@@ -61,6 +59,8 @@ public class StreamContextImpl implements StreamContext {
       StreamSegment newSegment = convertToSegment(streamPortions);
 
       Range<Long> segmentIdsRange = Range.closed(totalStreamPortionsQuantity + 1, totalStreamPortionsQuantity + newSegment.portionsQuantity);
+      log.info("Segment with id range from {} to {} was added to stream with name {}",
+              totalStreamPortionsQuantity + 1, totalStreamPortionsQuantity + newSegment.portionsQuantity, streamName);
       contentSegments.put(segmentIdsRange, newSegment);
       totalStreamPortionsQuantity += newSegment.portionsQuantity;
     });
@@ -97,6 +97,7 @@ public class StreamContextImpl implements StreamContext {
   @Override
   public StreamPortion getStreamPortion(Long portionId) {
     StreamSegment requestedContentSegment = contentSegments.get(portionId);
+    log.info("Stream portion with id - {} was obtained from stream with name {}, value - {}", portionId, streamName,  requestedContentSegment);
     return requestedContentSegment != null ? requestedContentSegment.getStreamPortion(portionId) : null;
   }
 
@@ -124,8 +125,9 @@ public class StreamContextImpl implements StreamContext {
       this.contentStreamPortions = contentStreamPortions;
       this.portionsQuantity = portionsLeft = contentStreamPortions.size();
     }
-
+    long start;
     void startSegmentStream() {
+      start = System.currentTimeMillis();
       iterationScheduler = Executors.newScheduledThreadPool(1);
       iterationScheduler.scheduleAtFixedRate(this::nextPortion, amongIterationDelay, amongIterationDelay, TimeUnit.SECONDS);
     }
@@ -133,6 +135,8 @@ public class StreamContextImpl implements StreamContext {
     private void nextPortion() {
       portionsLeft--;
       currentStreamIteration++;
+      log.info("Current stream iteration - {}, portion to next segment - {} in stream with name {}", currentStreamIteration,
+              portionsLeft, streamName);
       if (portionsLeft == 0) {
         stopSegmentStream();
       }
@@ -141,9 +145,10 @@ public class StreamContextImpl implements StreamContext {
     void stopSegmentStream() {
       systemResourceCleaner.cleanStreamResource(contentStreamPortions.values());
       StreamSegment nextSegment = contentSegments.get(currentStreamIteration);
-
+      log.info("Next stream segment is going to start, stream name - {}, segment value - {}", streamName, nextSegment);
+      log.info("Seconds spent for one segment - {}",  TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
       if (nextSegment != null) {
-        streamStarter.compileNewPortion(StreamContextImpl.this);
+        contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName));
         nextSegment.startSegmentStream();
       }
       iterationScheduler.shutdownNow();

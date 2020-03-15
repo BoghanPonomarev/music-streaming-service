@@ -15,7 +15,7 @@ public class StreamCompileContext {
 
   private Integer iteration;
   private String streamName;
-  private String videoFilePath;
+  private List<String> videoFilePath;
   private List<String> audioFilePathList;
 
 }

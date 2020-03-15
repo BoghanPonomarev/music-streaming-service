@@ -28,7 +28,7 @@ public class StreamPreviewImageGenerationChain extends AbstractStreamFilesGenera
 
         String resultFilePath = "src/main/resources/stream-source/" + streamName + "/" + streamName + "-pr.jpg";
         extractImageCommand.setOutputFile(resultFilePath);
-        extractImageCommand.setFirstInputFile(streamCompileContext.getVideoFilePath());
+        extractImageCommand.setFirstInputFile(streamCompileContext.getVideoFilePath().get(0));
         return extractImageCommand;
     }
 

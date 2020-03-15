@@ -23,6 +23,6 @@ public class Stream {
   @Column(name = "status_id")
   private Long streamStatusId;
   @Column(name ="compilation_iteration")
-  private Long compilationIteration;
+  private Integer lastCompilationIteration;
 
 }

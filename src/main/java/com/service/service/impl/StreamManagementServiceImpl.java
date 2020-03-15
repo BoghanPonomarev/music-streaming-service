@@ -1,15 +1,18 @@
 package com.service.service.impl;
 
 import com.service.context.StreamContext;
+import com.service.context.StreamContextImpl;
 import com.service.dao.PlaylistRepository;
 import com.service.dao.StreamRepository;
 import com.service.entity.StreamPortion;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.entity.model.Playlist;
 import com.service.entity.model.Stream;
+import com.service.exception.EntityNotFoundException;
+import com.service.holder.StreamContextHolder;
 import com.service.service.StreamManagementService;
-import com.service.stream.compile.StreamCompileStrategy;
-import com.service.stream.starter.StreamStarter;
+import com.service.stream.compile.StreamCompiler;
+import com.service.stream.starter.StreamContentInjector;
 import com.service.system.SystemResourceCleaner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +23,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -30,10 +31,8 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
 
   private static final String STREAM_SOURCES_FILE_PATH = "src/main/resources/stream-source";
 
-  private Map<String, StreamContext> streamContextMap = new HashMap<>();
   private final SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
-  private final StreamCompileStrategy streamCompiler;
-  private final StreamStarter streamStarter;
+  private final StreamContentInjector streamContentInjector;
 
   private final PlaylistRepository playlistRepository;
   private final StreamRepository streamRepository;
@@ -51,6 +50,9 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
 
     Stream savedStream = streamRepository.save(newStream);
     createStreamDirectory(streamName);
+
+    StreamContext streamContext = getOrCreateStreamContext(streamName);
+    StreamContextHolder.addStreamContext(streamName, streamContext);
     return savedStream.getId();
   }
 
@@ -64,19 +66,37 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
 
   @Override
   public StreamContext getStreamContext(String streamName) {
-    return streamContextMap.get(streamName);
+    return StreamContextHolder.getStreamContext(streamName);
   }
 
   @Override
   public void startStream(String streamName) {
-    StreamContext newStreamContext = streamStarter.startStream(streamName);
-    streamContextMap.put(streamName, newStreamContext);
-    streamStarter.compileNewPortion(newStreamContext);
+    StreamContext streamContext = StreamContextHolder.getStreamContext(streamName);
+    streamContentInjector.injectStreamContent(streamName);
+
+    Stream targetStream = streamRepository.findByName(streamName)
+            .orElseThrow(() -> new EntityNotFoundException("No such stream"));
+    targetStream.setStreamStatusId(StreamStatusConst.PLAYING.getId());
+    streamRepository.save(targetStream);
+    streamContext.startStream();
+  }
+
+  private StreamContext getOrCreateStreamContext(String streamName) {
+    StreamContext targetStreamContext = StreamContextHolder.getStreamContext(streamName);
+    if (targetStreamContext == null) {
+      return new StreamContextImpl(streamName, 1, streamContentInjector, systemResourceCleaner);
+    }
+    return targetStreamContext;
   }
 
   @Override
   public void compileStream(String streamName) {
-    streamCompiler.compileStream(streamName);
+    Stream targetStream = streamRepository.findByName(streamName)
+            .orElseThrow(() -> new EntityNotFoundException("No such stream"));
+
+    streamContentInjector.injectStreamContent(streamName);
+    targetStream.setStreamStatusId(StreamStatusConst.COMPILED.getId());
+    streamRepository.save(targetStream);
   }
 
 }

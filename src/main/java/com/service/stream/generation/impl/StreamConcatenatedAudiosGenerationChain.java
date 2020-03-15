@@ -20,7 +20,8 @@ public class StreamConcatenatedAudiosGenerationChain extends AbstractStreamFiles
         String longestConcatenatedFile = concatenateAllAudios(audioFilePathList);
 
         if(nextChainMember != null) {
-            String nextChainMemberResult = nextChainMember.continueAssembleStreamFiles(streamCompileContext.getVideoFilePath(), longestConcatenatedFile, streamCompileContext);
+            String firstVideoPath = streamCompileContext.getVideoFilePath().get(0);
+            String nextChainMemberResult = nextChainMember.continueAssembleStreamFiles(firstVideoPath, longestConcatenatedFile, streamCompileContext);
             cleanResources(longestConcatenatedFile);
             return nextChainMemberResult;
         }
