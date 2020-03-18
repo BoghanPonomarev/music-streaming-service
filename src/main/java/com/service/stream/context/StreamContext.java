@@ -1,4 +1,4 @@
-package com.service.context;
+package com.service.stream.context;
 
 import com.service.entity.StreamPortion;
 

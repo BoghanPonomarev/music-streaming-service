@@ -1,4 +1,4 @@
-package com.service.parser;
+package com.service.stream.parser;
 
 import com.service.entity.StreamPortion;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Component
-public class PlaylistParser implements Parser<String, Queue<StreamPortion>> {
+public class PlaylistParserImpl implements PlaylistParser<String, Queue<StreamPortion>> {
 
     private static final int REGEXP_DURATION_GROUP_POINTER = 1;
     private static final int REGEXP_FILE_PATH_GROUP_POINTER = 2;

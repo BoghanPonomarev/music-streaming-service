@@ -1,13 +1,12 @@
-package com.service.stream.starter;
+package com.service.stream.content;
 
-import com.service.context.StreamContext;
-import com.service.context.StreamContextImpl;
+import com.service.stream.context.StreamContext;
 import com.service.dao.StreamRepository;
 import com.service.entity.model.Stream;
 import com.service.entity.StreamPortion;
 import com.service.exception.EntityNotFoundException;
-import com.service.holder.StreamContextHolder;
-import com.service.parser.Parser;
+import com.service.stream.holder.StreamContextHolder;
+import com.service.stream.parser.PlaylistParser;
 import com.service.stream.compile.StreamCompiler;
 import com.service.system.FileReader;
 import com.service.system.SystemResourceCleaner;
@@ -17,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +32,7 @@ public class StreamContentInjectorImpl implements StreamContentInjector {
 
     private final StreamCompiler streamCompiler;
 
-    private final Parser<String, Queue<StreamPortion>> parser;
+    private final PlaylistParser<String, Queue<StreamPortion>> playlistParser;
 
     private final SystemResourceCleaner<String> stringSystemResourceCleaner;
 
@@ -43,7 +41,6 @@ public class StreamContentInjectorImpl implements StreamContentInjector {
     @Override
     @Transactional
     public void injectStreamContent(String streamName) {
-        long start = System.currentTimeMillis();
         StreamContext targetStreamContext = StreamContextHolder.getStreamContext(streamName);
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));
@@ -51,7 +48,6 @@ public class StreamContentInjectorImpl implements StreamContentInjector {
         int nextCompilationIteration = targetStream.getLastCompilationIteration() + 1;
         streamCompiler.compileStream(targetStream);
         appendNewPortions(targetStreamContext, nextCompilationIteration);
-        log.info("Seconds spent for injection - {}",  TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
     }
 
     private void appendNewPortions(StreamContext streamContext, int targetCompilationIteration) {
@@ -60,7 +56,7 @@ public class StreamContentInjectorImpl implements StreamContentInjector {
 
         String playListFile = commonDirectoryFilePath + "/" + targetStreamName + ".m3u8";
         String playlistText = fileReader.readFile(playListFile);
-        Queue<StreamPortion> parse = parser.parse(playlistText);
+        Queue<StreamPortion> parse = playlistParser.parse(playlistText);
         parse.forEach(portion -> portion.setFilePath(commonDirectoryFilePath + "/" + portion.getFilePath()));
         streamContext.appendStreamPortions(parse);
         stringSystemResourceCleaner.cleanStreamResource(playListFile);

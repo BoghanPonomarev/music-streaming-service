@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +31,11 @@ public class StreamManagementController {
     return ResponseEntity.ok("OK");
   }
 
+  @ResponseBody
+  @DeleteMapping(value = "/streams/{streamName}")
+  public ResponseEntity<String> deleteStream(@PathVariable("streamName") String streamName) throws IOException {
+    streamManagementService.deleteStream(streamName);
+    return ResponseEntity.ok("OK");
+  }
 
 }

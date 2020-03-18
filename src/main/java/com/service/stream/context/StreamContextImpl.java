@@ -1,10 +1,10 @@
-package com.service.context;
+package com.service.stream.context;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
 import com.service.entity.StreamPortion;
-import com.service.stream.starter.StreamContentInjector;
+import com.service.stream.content.StreamContentInjector;
 import com.service.system.SystemResourceCleaner;
 import com.service.util.LockUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -125,9 +125,8 @@ public class StreamContextImpl implements StreamContext {
       this.contentStreamPortions = contentStreamPortions;
       this.portionsQuantity = portionsLeft = contentStreamPortions.size();
     }
-    long start;
+
     void startSegmentStream() {
-      start = System.currentTimeMillis();
       iterationScheduler = Executors.newScheduledThreadPool(1);
       iterationScheduler.scheduleAtFixedRate(this::nextPortion, amongIterationDelay, amongIterationDelay, TimeUnit.SECONDS);
     }
@@ -146,7 +145,6 @@ public class StreamContextImpl implements StreamContext {
       systemResourceCleaner.cleanStreamResource(contentStreamPortions.values());
       StreamSegment nextSegment = contentSegments.get(currentStreamIteration);
       log.info("Next stream segment is going to start, stream name - {}, segment value - {}", streamName, nextSegment);
-      log.info("Seconds spent for one segment - {}",  TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
       if (nextSegment != null) {
         contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName));
         nextSegment.startSegmentStream();

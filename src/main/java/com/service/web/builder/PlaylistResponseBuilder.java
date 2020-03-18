@@ -1,32 +1,47 @@
 package com.service.web.builder;
 
 import com.service.entity.StreamPortion;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PlaylistResponseBuilder implements ResponseBuilder<String, StreamPortion> {
 
+    @Value("${server.url}")
+    private String serverUrl;
+
+    private static final String GENERAL_PLAYLIST_TAGS = "#EXTM3U\n" +
+            "#EXT-X-VERSION:3\n" +
+            "#EXT-X-TARGETDURATION:20\n";
+    private static final String PLAYLIST_ID_TAG = "#EXT-X-MEDIA-SEQUENCE:";
+    private static final String DURATION_TAG = "#EXTINF:";
+
     @Override
     public String buildResponse(StreamPortion streamPortion) {
-        String streamSegmentDecimeter = (streamPortion.isFirstPortionInSegment()) ? "#EXT-X-DISCONTINUITY\n" : "";
+        String streamSegmentDelimiter = (streamPortion.isFirstPortionInSegment()) ? "#EXT-X-DISCONTINUITY\n" : "";
 
         if (streamPortion.getId() < 2) {
-            return "#EXTM3U\n" +
-                    "#EXT-X-VERSION:3\n" +
-                    "#EXT-X-TARGETDURATION:20\n" +
-                    "#EXT-X-MEDIA-SEQUENCE:" + streamPortion.getId() + "\n" +
-                    "#EXTINF:" + streamPortion.getDuration() + ",\n" +
-                    "http://localhost:8080/api/v1/ts/" + streamPortion.getId();
+        return buildStartPlaylistTags(streamPortion);
         }
 
-        return "#EXTM3U\n" +
-                "#EXT-X-VERSION:3\n" +
-                "#EXT-X-TARGETDURATION:20\n" +
-                "#EXT-X-MEDIA-SEQUENCE:" + streamPortion.getId() + "\n" +
-                "#EXTINF:" + streamPortion.getDuration() + ",\n" +
-                "http://localhost:8080/api/v1/streams/" + streamPortion.getStreamName() + "/ts/" + (streamPortion.getId() - 1) + "\n" + streamSegmentDecimeter +
-                "#EXTINF:" + streamPortion.getDuration() + ",\n" +
-                "http://localhost:8080/api/v1/streams/" + streamPortion.getStreamName() + "/ts/" + streamPortion.getId();
+        return buildPlaylistTags(streamPortion, streamSegmentDelimiter);
+    }
+
+    private String buildStartPlaylistTags(StreamPortion streamPortion) {
+        return GENERAL_PLAYLIST_TAGS +
+                PLAYLIST_ID_TAG + streamPortion.getId() + "\n" +
+                DURATION_TAG + streamPortion.getDuration() + ",\n" +
+                serverUrl + "/api/v1/ts/" + streamPortion.getId();
+    }
+
+    private String buildPlaylistTags(StreamPortion streamPortion, String streamSegmentDelimiter) {
+        return GENERAL_PLAYLIST_TAGS +
+                PLAYLIST_ID_TAG + streamPortion.getId() + "\n" +
+                DURATION_TAG + streamPortion.getDuration() + ",\n" +
+                serverUrl + "/api/v1/streams/" + streamPortion.getStreamName() + "/ts/" + (streamPortion.getId() - 1) + "\n" +
+                streamSegmentDelimiter +
+                DURATION_TAG + streamPortion.getDuration() + ",\n" +
+                serverUrl + "/api/v1/streams/" + streamPortion.getStreamName() + "/ts/" + streamPortion.getId();
     }
 
 }

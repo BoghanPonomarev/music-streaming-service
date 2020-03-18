@@ -1,6 +1,6 @@
-package com.service.holder;
+package com.service.stream.holder;
 
-import com.service.context.StreamContext;
+import com.service.stream.context.StreamContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;

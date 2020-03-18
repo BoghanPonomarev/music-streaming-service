@@ -1,15 +1,13 @@
 package com.service.web.rest;
 
-import com.service.context.StreamContext;
+import com.service.stream.context.StreamContext;
 import com.service.entity.StreamPortion;
 import com.service.service.StreamManagementService;
 import com.service.web.builder.ResponseBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;

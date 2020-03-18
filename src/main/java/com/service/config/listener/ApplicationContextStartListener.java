@@ -1,18 +1,15 @@
 package com.service.config.listener;
 
-import com.service.context.StreamContext;
-import com.service.context.StreamContextImpl;
+import com.service.stream.context.StreamContextImpl;
 import com.service.entity.StreamPortion;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.entity.model.Stream;
-import com.service.holder.StreamContextHolder;
-import com.service.stream.starter.StreamContentInjector;
+import com.service.stream.holder.StreamContextHolder;
+import com.service.stream.content.StreamContentInjector;
 import com.service.system.SystemResourceCleaner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
