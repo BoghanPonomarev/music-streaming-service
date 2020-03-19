@@ -25,7 +25,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/v1")
+@RequestMapping(value = "/api/v1/admin")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PlaylistManagementController {
 
@@ -68,26 +68,6 @@ public class PlaylistManagementController {
   @GetMapping(value = "/playlists/{streamName}", produces = "application/json")
   public ResponseEntity<PlaylistDto> getPlaylist(@PathVariable("streamName") String streamName) {
     return ResponseEntity.ok(playlistManagementService.getPlaylist(streamName));
-  }
-
-  @ResponseBody
-  @GetMapping(value = "/playlists", produces = "application/json")
-  public ResponseEntity<List<BaseStreamInfoDto>> getPlaylistsBaseInfos(BaseStreamInfoFilterDto baseStreamInfoFilterDto) {
-    return ResponseEntity.ok(playlistManagementService.getPlaylistsNames(baseStreamInfoFilterDto));
-  }
-
-  @ResponseBody
-  @GetMapping(value = "/videos/{id}")
-  public ResponseEntity<byte[]> getAnimationPart(@PathVariable("id") Long id) throws IOException {
-    File animationPart = mediaService.getAnimation(id);
-    return ResponseEntity.ok(FileUtils.readFileToByteArray(animationPart));
-  }
-
-  @ResponseBody
-  @GetMapping(value = "/audios/{id}")
-  public ResponseEntity<byte[]> getAudioPart(@PathVariable("id") Long id) throws IOException {
-    File animationPart = mediaService.getAudio(id);
-    return ResponseEntity.ok(FileUtils.readFileToByteArray(animationPart));
   }
 
 }

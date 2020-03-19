@@ -11,7 +11,7 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/v1")
+@RequestMapping(value = "/api/v1/admin")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class StreamManagementController {
 

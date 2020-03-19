@@ -61,6 +61,11 @@ CREATE TABLE `music`.`stream` (
     ALTER TABLE `music`.`stream`
 ADD COLUMN `compilation_iteration` INT NULL AFTER `status_id`;
 
+CREATE TABLE music.admin_token (
+                                    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+                                   token VARCHAR(255) NOT NULL,
+                                   PRIMARY KEY (id),
+                                   UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);
 
 INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('1', 'CREATED');
 INSERT INTO `music`.`con_stream_status` (`id`, `value`) VALUES ('2', 'COMPILED');

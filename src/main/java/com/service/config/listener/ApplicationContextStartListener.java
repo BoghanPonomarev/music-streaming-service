@@ -20,6 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationContextStartListener implements ApplicationListener<ContextRefreshedEvent> {
 
+    private static final String GLOBAL_STREAM_FOLDER_PATH = "src/main/resources/stream-source/";
+
     private final JpaRepository<Stream, Long> streamRepository;
 
     private final SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
@@ -41,6 +43,10 @@ public class ApplicationContextStartListener implements ApplicationListener<Cont
                 extractLastCompilationIteration(stream), streamContentInjector, systemResourceCleaner);
 
         StreamContextHolder.addStreamContext(streamName, newStreamContext);
+    }
+
+    private void createStreamFolder(Stream stream) {
+
     }
 
     private long extractLastCompilationIteration(Stream stream) {
