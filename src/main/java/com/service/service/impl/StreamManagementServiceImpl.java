@@ -109,7 +109,7 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
         playlistRepository.deleteById(targetStream.getPlaylistId());
         streamRepository.delete(targetStream);
         StreamContextHolder.removeStreamContext(streamName);
-        FileUtils.deleteDirectory(new File(STREAM_SOURCES_FILE_PATH + "/" + targetStream));
+        FileUtils.deleteDirectory(new File(STREAM_SOURCES_FILE_PATH + "/" + streamName));
     }
 
 }

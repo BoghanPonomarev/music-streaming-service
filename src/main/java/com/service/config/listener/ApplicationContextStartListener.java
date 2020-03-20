@@ -8,14 +8,17 @@ import com.service.stream.holder.StreamContextHolder;
 import com.service.stream.content.StreamContentInjector;
 import com.service.system.SystemResourceCleaner;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ApplicationContextStartListener implements ApplicationListener<ContextRefreshedEvent> {
@@ -32,7 +35,8 @@ public class ApplicationContextStartListener implements ApplicationListener<Cont
         List<Stream> streamList = streamRepository.findAll();
         streamList.stream()
                 .peek(stream -> stream.setStreamStatusId(StreamStatusConst.CREATED.getId()))
-                .forEach(this::createStreamContext);
+                .peek(this::createStreamContext)
+                .forEach(this::createStreamFolderIfNotExists);
 
         streamRepository.saveAll(streamList);
     }
@@ -45,8 +49,19 @@ public class ApplicationContextStartListener implements ApplicationListener<Cont
         StreamContextHolder.addStreamContext(streamName, newStreamContext);
     }
 
-    private void createStreamFolder(Stream stream) {
+    private void createStreamFolderIfNotExists(Stream stream) {
+        String streamName = stream.getName();
+        File streamDirectory = new File(GLOBAL_STREAM_FOLDER_PATH + "/" + streamName);
+        if(!streamDirectory.exists()) {
+          createDirectory(streamDirectory, streamName);
+        }
+    }
 
+    private void createDirectory(File streamDirectory, String streamName) {
+        boolean isFileCreated = streamDirectory.mkdir();
+        if(isFileCreated) {
+            log.info("New directory was created for stream with name {}", streamName);
+        }
     }
 
     private long extractLastCompilationIteration(Stream stream) {

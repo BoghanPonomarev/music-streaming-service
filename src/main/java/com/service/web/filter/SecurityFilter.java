@@ -13,28 +13,34 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Component
-@Order(1000)
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class SecurityFilter implements Filter {
 
-    private final AdminTokenRepository adminTokenRepository;
+    private static final String TOKEN_HEADER_KEY = "Authorization";
+    private static final String OPTION_METHOD_NAME = "OPTIONS";
+    private static final String ADMIN_URL = "/admin/";
+    private static final String LOGIN_URL = "/login";
 
-    private String adminUrl = "/admin/";
+    private final AdminTokenRepository adminTokenRepository;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) request;
-        if(!req.getMethod().equals("OPTIONS")) {
-            String requestURL = req.getRequestURL().toString();
-            if (requestURL.contains(adminUrl) && !requestURL.contains("/login")) {
-                String token = req.getHeader("Authorization");
-                if (StringUtils.isEmpty(token) || !adminTokenRepository.findByToken(token).isPresent()) {
-                    throw new NotAuthorizedException("Deny");
-                }
-            }
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if(!httpRequest.getMethod().equals(OPTION_METHOD_NAME)) {
+            handleSecuredMethods(httpRequest);
         }
         chain.doFilter(request,response);
+    }
+
+    private void handleSecuredMethods(HttpServletRequest request ) {
+        String requestURL = request.getRequestURL().toString();
+        if (requestURL.contains(ADMIN_URL) && !requestURL.contains(LOGIN_URL)) {
+            String token = request.getHeader(TOKEN_HEADER_KEY);
+            if (StringUtils.isEmpty(token) || !adminTokenRepository.findByToken(token).isPresent()) {
+                throw new NotAuthorizedException("Deny");
+            }
+        }
     }
 
 }
