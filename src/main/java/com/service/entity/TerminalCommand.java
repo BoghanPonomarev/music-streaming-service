@@ -26,6 +26,8 @@ public class TerminalCommand {
 
     if (secondInputFile != null) {
       filledTextCommand = String.format(command, commandWordPath, firstInputFile, secondInputFile, outputFile);
+    } else if(firstInputFile == null){
+      filledTextCommand = String.format(command, commandWordPath, outputFile);
     } else {
       filledTextCommand = String.format(command, commandWordPath, firstInputFile, outputFile);
     }

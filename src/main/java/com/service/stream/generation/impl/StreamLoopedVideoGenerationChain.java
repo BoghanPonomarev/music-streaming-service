@@ -27,7 +27,7 @@ public class StreamLoopedVideoGenerationChain extends AbstractStreamFilesGenerat
     @Override
     public TerminalCommand createTerminalCommand() {
         String mergeLoopedVideoBeforeAudioFinishCommand = "%s -stream_loop -1 -i %s -i %s -shortest -map 0:v:0 -map 1:a:0 -y %s";
-        return new TerminalCommand(mergeLoopedVideoBeforeAudioFinishCommand, COMMAND_WORD_PATH);
+        return new TerminalCommand(mergeLoopedVideoBeforeAudioFinishCommand, commandWordPath);
     }
 
 }

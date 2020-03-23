@@ -32,7 +32,6 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
 
     private static final String STREAM_SOURCES_FILE_PATH = "src/main/resources/stream-source";
 
-    private final SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
     private final StreamContentInjector streamContentInjector;
 
     private final PlaylistRepository playlistRepository;
@@ -85,7 +84,7 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
     private StreamContext getOrCreateStreamContext(String streamName) {
         StreamContext targetStreamContext = StreamContextHolder.getStreamContext(streamName);
         if (targetStreamContext == null) {
-            return new StreamContextImpl(streamName, 1, streamContentInjector, systemResourceCleaner);
+            return new StreamContextImpl(streamName, streamContentInjector);
         }
         return targetStreamContext;
     }

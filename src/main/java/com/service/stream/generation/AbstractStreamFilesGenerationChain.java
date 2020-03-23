@@ -6,6 +6,7 @@ import com.service.stream.compile.StreamCompileContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public abstract class AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    protected static final String COMMAND_WORD_PATH = "ffmpeg";
+    @Value("${compilation.command.word.path}")
+    protected static String commandWordPath;
 
     protected TerminalCommandExecutor commandExecutor;
     protected StreamFilesGenerationChain nextChainMember;

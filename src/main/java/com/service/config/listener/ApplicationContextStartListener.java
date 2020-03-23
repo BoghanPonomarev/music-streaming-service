@@ -27,7 +27,6 @@ public class ApplicationContextStartListener implements ApplicationListener<Cont
 
     private final JpaRepository<Stream, Long> streamRepository;
 
-    private final SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
     private final StreamContentInjector streamContentInjector;
 
     @Override
@@ -43,8 +42,7 @@ public class ApplicationContextStartListener implements ApplicationListener<Cont
 
     private void createStreamContext(Stream stream) {
         String streamName = stream.getName();
-        StreamContextImpl newStreamContext = new StreamContextImpl(streamName,
-                extractLastCompilationIteration(stream), streamContentInjector, systemResourceCleaner);
+        StreamContextImpl newStreamContext = new StreamContextImpl(streamName, streamContentInjector);
 
         StreamContextHolder.addStreamContext(streamName, newStreamContext);
     }
@@ -62,11 +60,6 @@ public class ApplicationContextStartListener implements ApplicationListener<Cont
         if(isFileCreated) {
             log.info("New directory was created for stream with name {}", streamName);
         }
-    }
-
-    private long extractLastCompilationIteration(Stream stream) {
-        Integer lastCompilationIteration = stream.getLastCompilationIteration();
-        return lastCompilationIteration != null ? lastCompilationIteration : 1L;
     }
 
 }

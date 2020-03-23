@@ -9,6 +9,8 @@ import com.service.entity.model.Video;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.exception.EntityNotFoundException;
 import com.service.service.PlaylistManagementService;
+import com.service.stream.context.StreamContext;
+import com.service.stream.holder.StreamContextHolder;
 import com.service.web.dto.BaseStreamInfoFilterDto;
 import com.service.web.dto.MediaDto;
 import com.service.web.dto.PlaylistDto;
@@ -119,15 +121,25 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
             .orElseThrow(() -> new EntityNotFoundException("No such stream"));
     Long playlistId = stream.getPlaylistId();
 
+
     String status = StreamStatusConst.valueOf(stream.getStreamStatusId()).getValue();
     return PlaylistDto.builder()
             .playlistId(playlistId)
             .streamId(stream.getId())
             .status(status)
             .streamName(stream.getName())
+            .streamIteration(getStreamIteration(streamName))
             .audioIdList(audioRepository.findAllByPlaylistId(playlistId).stream().map(this::mapAudio).collect(Collectors.toList()))
             .videoIdList(videoRepository.findAllByPlaylistId(playlistId).stream().map(Video::getId).collect(Collectors.toList()))
             .build();
+  }
+
+  private Long getStreamIteration(String streamName) {
+    StreamContext streamContext = StreamContextHolder.getStreamContext(streamName);
+    if(streamContext != null && streamContext.getCurrentStreamPortion() != null) {
+      return streamContext.getCurrentStreamPortion().getId();
+    }
+    return -1L;
   }
 
   private MediaDto mapAudio(Audio audio) {

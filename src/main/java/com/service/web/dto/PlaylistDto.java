@@ -18,6 +18,7 @@ public class PlaylistDto {
   private Long streamId;
   private String streamName;
   private String status;
+  private Long streamIteration;
   private List<Long> videoIdList;
   private List<MediaDto> audioIdList;
 

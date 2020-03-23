@@ -35,7 +35,7 @@ public class StreamPreviewImageGenerationChain extends AbstractStreamFilesGenera
     @Override
     public TerminalCommand createTerminalCommand() {
         String extractImageCommand= "%s -y -i %s -qscale:v 4 -frames:v 1 %s";
-        return new TerminalCommand(extractImageCommand, COMMAND_WORD_PATH);
+        return new TerminalCommand(extractImageCommand, commandWordPath);
     }
 
 }

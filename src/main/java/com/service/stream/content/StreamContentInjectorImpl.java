@@ -41,13 +41,20 @@ public class StreamContentInjectorImpl implements StreamContentInjector {
     @Override
     @Transactional
     public void injectStreamContent(String streamName) {
+        long start = System.currentTimeMillis();
         StreamContext targetStreamContext = StreamContextHolder.getStreamContext(streamName);
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));
 
-        int nextCompilationIteration = targetStream.getLastCompilationIteration() + 1;
+        int nextCompilationIteration = getNextStreamIteration(targetStream);
         streamCompiler.compileStream(targetStream);
         appendNewPortions(targetStreamContext, nextCompilationIteration);
+        log.info("Seconds spent for injection - {}",  TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
+    }
+
+    private Integer getNextStreamIteration(Stream stream) {
+        Integer compilationIteration = stream.getLastCompilationIteration();
+        return compilationIteration != null ? compilationIteration + 1 : 1;
     }
 
     private void appendNewPortions(StreamContext streamContext, int targetCompilationIteration) {

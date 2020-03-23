@@ -6,6 +6,7 @@ import com.service.stream.compile.StreamCompileContext;
 import com.service.stream.generation.AbstractStreamFilesGenerationChain;
 import com.service.stream.generation.StreamFilesGenerationChain;
 
+import java.util.Collections;
 import java.util.List;
 
 public class StreamConcatenatedAudiosGenerationChain extends AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
@@ -17,9 +18,11 @@ public class StreamConcatenatedAudiosGenerationChain extends AbstractStreamFiles
     @Override
     public String continueAssembleStreamFiles(String firstAssembleSourceFilePath, String secondAssembleSourceFilePath, StreamCompileContext streamCompileContext) {
         List<String> audioFilePathList = streamCompileContext.getAudioFilePathList();
-        String longestConcatenatedFile = concatenateAllAudios(audioFilePathList);
+        Collections.shuffle(audioFilePathList);
 
-        if(nextChainMember != null) {
+        String longestConcatenatedFile = executeWithTemporaryResult(null, null, createConcatenateCommand(audioFilePathList), "mp3");;
+
+        if (nextChainMember != null) {
             String firstVideoPath = streamCompileContext.getVideoFilePath().get(0);
             String nextChainMemberResult = nextChainMember.continueAssembleStreamFiles(firstVideoPath, longestConcatenatedFile, streamCompileContext);
             cleanResources(longestConcatenatedFile);
@@ -28,23 +31,21 @@ public class StreamConcatenatedAudiosGenerationChain extends AbstractStreamFiles
         return longestConcatenatedFile;
     }
 
-    private String concatenateAllAudios( List<String> audioFilePathList) {
-        String longestConcatenatedFile = audioFilePathList.get(0);
-
-        for (int i = 1; i < audioFilePathList.size(); i++) {
-            String tmpMainFilePath = executeWithTemporaryResult(longestConcatenatedFile, audioFilePathList.get(i), createTerminalCommand(), "mp3");
-            if (i > 1) {
-                cleanResources(longestConcatenatedFile);
-            }
-            longestConcatenatedFile = tmpMainFilePath;
-        }
-        return longestConcatenatedFile;
-    }
-
     @Override
     public TerminalCommand createTerminalCommand() {
-        String concatenateAudiosCommand = "%s -i \"concat:%s|%s\" -acodec copy %s";
-        return new TerminalCommand(concatenateAudiosCommand, COMMAND_WORD_PATH);
+       return null;
+    }
+
+    private TerminalCommand createConcatenateCommand(List<String> filePathsToConcatenate) {
+        StringBuilder concatenateCommandBuilder = new StringBuilder("%s -i \"concat:");
+
+        concatenateCommandBuilder.append(filePathsToConcatenate.get(0));
+        for (int i = 1; i < filePathsToConcatenate.size(); i++) {
+            concatenateCommandBuilder.append("|").append(filePathsToConcatenate.get(i));
+        }
+
+        concatenateCommandBuilder.append("\" -acodec copy %s");
+        return new TerminalCommand(concatenateCommandBuilder.toString(), commandWordPath);
     }
 
 }

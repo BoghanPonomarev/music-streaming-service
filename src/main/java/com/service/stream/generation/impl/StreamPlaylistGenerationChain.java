@@ -49,8 +49,8 @@ public class StreamPlaylistGenerationChain extends AbstractStreamFilesGeneration
 
     @Override
     public TerminalCommand createTerminalCommand() {
-        String videoToStreamCommand = "%s -i %s -bsf:v h264_mp4toannexb -c copy -hls_list_size 0 %s";
-        return new TerminalCommand(videoToStreamCommand, COMMAND_WORD_PATH);
+        String videoToStreamCommand = "%s -i %s -bsf:v h264_mp4toannexb -c copy -hls_time 30 -hls_list_size 0 %s";
+        return new TerminalCommand(videoToStreamCommand, commandWordPath);
     }
 
 }
