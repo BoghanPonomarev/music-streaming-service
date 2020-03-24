@@ -1,10 +1,12 @@
-package com.service.stream.context;
+package com.service.stream.context.impl;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
-import com.service.entity.StreamPortion;
 import com.service.stream.content.StreamContentInjector;
+import com.service.stream.context.StreamPortionDto;
+import com.service.stream.context.StreamContext;
+import com.service.stream.context.StreamPortion;
 import com.service.system.SystemResourceCleaner;
 import com.service.system.impl.DelaySystemResourceCleanerImpl;
 import com.service.util.LockUtils;
@@ -30,7 +32,7 @@ public class StreamContextImpl implements StreamContext {
 
     private String streamName;
     private boolean isAlive = false;
-    private long currentStreamIteration = 1;
+    private long currentStreamIteration = 2;
     private long totalStreamPortionsQuantity;
 
     private RangeMap<Long, StreamSegment> contentSegments = TreeRangeMap.create();
@@ -102,8 +104,8 @@ public class StreamContextImpl implements StreamContext {
     }
 
     @Override
-    public StreamPortion getCurrentStreamPortion() {
-        return getStreamPortion(currentStreamIteration);
+    public StreamPortionDto getStreamPortionDto() {
+        return new StreamPortionDto(getStreamPortion(currentStreamIteration), getStreamPortion(currentStreamIteration - 1));
     }
 
     @Override
@@ -127,7 +129,7 @@ public class StreamContextImpl implements StreamContext {
         }
 
         void startSegmentStream() {
-            contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName));
+            contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName, false));
             iterationScheduler = Executors.newScheduledThreadPool(1);
             iterationScheduler.scheduleAtFixedRate(this::nextPortion, amongIterationDelay, amongIterationDelay, TimeUnit.SECONDS);
         }

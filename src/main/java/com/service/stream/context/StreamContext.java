@@ -1,7 +1,5 @@
 package com.service.stream.context;
 
-import com.service.entity.StreamPortion;
-
 import java.util.Queue;
 
 public interface StreamContext {
@@ -14,6 +12,6 @@ public interface StreamContext {
 
   StreamPortion getStreamPortion(Long portionId);
 
-  StreamPortion getCurrentStreamPortion();
+  StreamPortionDto getStreamPortionDto();
 
 }

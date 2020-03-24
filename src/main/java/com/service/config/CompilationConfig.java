@@ -3,20 +3,32 @@ package com.service.config;
 import com.service.executor.TerminalCommandExecutor;
 import com.service.stream.generation.StreamFilesGenerationChain;
 import com.service.stream.generation.impl.*;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CompilationConfig {
 
-  @Bean
-  public StreamFilesGenerationChain streamFilesGenerationChain(TerminalCommandExecutor terminalCommandExecutor) {
-    StreamPlaylistGenerationChain streamPlaylistGenerationChain = new StreamPlaylistGenerationChain(terminalCommandExecutor, null);
-    LastStreamVideoPieceGenerationChain lastStreamVideoPieceGenerationChain = new LastStreamVideoPieceGenerationChain(terminalCommandExecutor, streamPlaylistGenerationChain);
-    StreamLoopedVideoGenerationChain streamLoopedVideoGenerationChain = new StreamLoopedVideoGenerationChain(terminalCommandExecutor, lastStreamVideoPieceGenerationChain);
-    StreamConcatenatedAudiosGenerationChain streamConcatenatedAudiosGenerationChain = new StreamConcatenatedAudiosGenerationChain(terminalCommandExecutor, streamLoopedVideoGenerationChain);
+  @Value("${compilation.command.word.path}")
+  private String commandWordPath;
 
-    return new StreamPreviewImageGenerationChain(terminalCommandExecutor, streamConcatenatedAudiosGenerationChain);
+  @Bean
+  @Qualifier("streamStartGenerationChainMember")
+  public StreamFilesGenerationChain streamStartGenerationChainMember(TerminalCommandExecutor terminalCommandExecutor, StreamPlaylistGenerationChain streamPlaylistGenerationChain) {
+    LastStreamVideoPieceGenerationChain lastStreamVideoPieceGenerationChain = new LastStreamVideoPieceGenerationChain(terminalCommandExecutor, streamPlaylistGenerationChain, commandWordPath);
+    StreamLoopedVideoGenerationChain streamLoopedVideoGenerationChain = new StreamLoopedVideoGenerationChain(terminalCommandExecutor, lastStreamVideoPieceGenerationChain, commandWordPath);
+    StreamSilentVideoGenerationChain silentVideoGenerationChain = new StreamSilentVideoGenerationChain(terminalCommandExecutor, streamLoopedVideoGenerationChain, commandWordPath);
+    StreamConcatenatedAudiosGenerationChain streamConcatenatedAudiosGenerationChain = new StreamConcatenatedAudiosGenerationChain(terminalCommandExecutor, silentVideoGenerationChain, commandWordPath);
+
+    return new StreamPreviewImageGenerationChain(terminalCommandExecutor, streamConcatenatedAudiosGenerationChain, commandWordPath);
+  }
+
+  @Bean
+  @Qualifier("streamPlaylistGenerationChainMember")
+  public StreamPlaylistGenerationChain streamPlaylistGenerationChainMember(TerminalCommandExecutor terminalCommandExecutor) {
+    return new StreamPlaylistGenerationChain(terminalCommandExecutor, null, commandWordPath);
   }
 
 }

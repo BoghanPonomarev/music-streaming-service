@@ -11,8 +11,8 @@ import java.util.List;
 
 public class StreamConcatenatedAudiosGenerationChain extends AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    public StreamConcatenatedAudiosGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember) {
-        super(commandExecutor, nextChainMember);
+    public StreamConcatenatedAudiosGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember, String commandWordPath) {
+        super(commandExecutor, nextChainMember, commandWordPath);
     }
 
     @Override

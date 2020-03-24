@@ -7,27 +7,43 @@ import com.service.entity.model.Audio;
 import com.service.entity.model.Stream;
 import com.service.entity.model.Video;
 import com.service.stream.generation.StreamFilesGenerationChain;
+import com.service.stream.generation.impl.StreamPlaylistGenerationChain;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class StreamCompilerImpl implements StreamCompiler {
 
     private final StreamFilesGenerationChain streamCompileChain;
+
+    private final StreamFilesGenerationChain streamPlaylistGenerationChain;
+
     private final StreamRepository streamRepository;
     private final VideoRepository videoRepository;
     private final AudioRepository audioRepository;
 
+    public StreamCompilerImpl(@Qualifier("streamStartGenerationChainMember") StreamFilesGenerationChain streamCompileChain,
+                              @Qualifier("streamPlaylistGenerationChainMember") StreamFilesGenerationChain streamPlaylistGenerationChain,
+                              StreamRepository streamRepository, VideoRepository videoRepository, AudioRepository audioRepository) {
+        this.streamCompileChain = streamCompileChain;
+        this.streamPlaylistGenerationChain = streamPlaylistGenerationChain;
+        this.streamRepository = streamRepository;
+        this.videoRepository = videoRepository;
+        this.audioRepository = audioRepository;
+    }
+
     @Override
-    public void compileStream(Stream targetStream) {
+    public void compileStream(Stream targetStream, boolean fullRecompile) {
         Integer newCompilationIteration = getNextStreamIteration(targetStream);
         StreamCompileContext streamCompileContext = buildStreamCompileContext(targetStream, newCompilationIteration);
 
-        streamCompileChain.startAssembleStreamFiles(streamCompileContext);
+        assembleStream(streamCompileContext, fullRecompile);
 
         targetStream.setLastCompilationIteration(newCompilationIteration);
         streamRepository.save(targetStream);
@@ -47,5 +63,16 @@ public class StreamCompilerImpl implements StreamCompiler {
                 .collect(Collectors.toList());
 
         return new StreamCompileContext(newCompilationIteration, stream.getName(), streamVideosPaths, streamAudiosPathList);
+    }
+
+    private void assembleStream(StreamCompileContext streamCompileContext, boolean fullRecompile) {
+        String compiledPlaylistVideoPath = "src/main/resources/stream-source/" +
+                streamCompileContext.getStreamName() + "/compiled-content.mp4";
+
+        if (fullRecompile) {
+            streamCompileChain.startAssembleStreamFiles(streamCompileContext);
+        } else {
+            streamPlaylistGenerationChain.continueAssembleStreamFiles(compiledPlaylistVideoPath, null, streamCompileContext);
+        }
     }
 }

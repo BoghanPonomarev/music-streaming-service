@@ -3,7 +3,7 @@ package com.service.stream.content;
 import com.service.stream.context.StreamContext;
 import com.service.dao.StreamRepository;
 import com.service.entity.model.Stream;
-import com.service.entity.StreamPortion;
+import com.service.stream.context.StreamPortion;
 import com.service.exception.EntityNotFoundException;
 import com.service.stream.holder.StreamContextHolder;
 import com.service.stream.parser.PlaylistParser;
@@ -40,14 +40,14 @@ public class StreamContentInjectorImpl implements StreamContentInjector {
 
     @Override
     @Transactional
-    public void injectStreamContent(String streamName) {
+    public void injectStreamContent(String streamName, boolean fullRecompile) {
         long start = System.currentTimeMillis();
         StreamContext targetStreamContext = StreamContextHolder.getStreamContext(streamName);
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));
 
         int nextCompilationIteration = getNextStreamIteration(targetStream);
-        streamCompiler.compileStream(targetStream);
+        streamCompiler.compileStream(targetStream, fullRecompile);
         appendNewPortions(targetStreamContext, nextCompilationIteration);
         log.info("Seconds spent for injection - {}",  TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
     }

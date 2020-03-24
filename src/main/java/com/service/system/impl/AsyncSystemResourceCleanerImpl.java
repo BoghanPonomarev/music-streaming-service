@@ -1,6 +1,6 @@
 package com.service.system.impl;
 
-import com.service.entity.StreamPortion;
+import com.service.stream.context.StreamPortion;
 import com.service.system.SystemResourceCleaner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;

@@ -13,14 +13,18 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Slf4j
-@AllArgsConstructor
 public abstract class AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    @Value("${compilation.command.word.path}")
-    protected static String commandWordPath;
+    protected String commandWordPath;
 
     protected TerminalCommandExecutor commandExecutor;
     protected StreamFilesGenerationChain nextChainMember;
+
+    public AbstractStreamFilesGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember, String commandWordPath) {
+        this.commandExecutor = commandExecutor;
+        this.nextChainMember = nextChainMember;
+        this.commandWordPath = commandWordPath;
+    }
 
     @Override
     public String continueAssembleStreamFiles(String firstAssembleSourceFilePath, String secondAssembleSourceFilePath, StreamCompileContext streamCompileContext) {

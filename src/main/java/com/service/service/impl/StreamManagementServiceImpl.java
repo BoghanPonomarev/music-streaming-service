@@ -1,10 +1,9 @@
 package com.service.service.impl;
 
 import com.service.stream.context.StreamContext;
-import com.service.stream.context.StreamContextImpl;
+import com.service.stream.context.impl.StreamContextImpl;
 import com.service.dao.PlaylistRepository;
 import com.service.dao.StreamRepository;
-import com.service.entity.StreamPortion;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.entity.model.Playlist;
 import com.service.entity.model.Stream;
@@ -12,7 +11,6 @@ import com.service.exception.EntityNotFoundException;
 import com.service.stream.holder.StreamContextHolder;
 import com.service.service.StreamManagementService;
 import com.service.stream.content.StreamContentInjector;
-import com.service.system.SystemResourceCleaner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -23,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collection;
 
 @Slf4j
 @Service
@@ -72,7 +69,7 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
     @Override
     public void startStream(String streamName) {
         StreamContext streamContext = StreamContextHolder.getStreamContext(streamName);
-        streamContentInjector.injectStreamContent(streamName);
+        streamContentInjector.injectStreamContent(streamName, false);
 
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));
@@ -94,8 +91,10 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));
 
-        streamContentInjector.injectStreamContent(streamName);
-        targetStream.setStreamStatusId(StreamStatusConst.COMPILED.getId());
+        streamContentInjector.injectStreamContent(streamName, true);
+        if(targetStream.getStreamStatusId() == StreamStatusConst.CREATED.getId()) {
+            targetStream.setStreamStatusId(StreamStatusConst.COMPILED.getId());
+        }
         streamRepository.save(targetStream);
     }
 

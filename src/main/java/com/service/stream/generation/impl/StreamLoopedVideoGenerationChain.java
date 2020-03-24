@@ -8,8 +8,8 @@ import com.service.stream.generation.StreamFilesGenerationChain;
 
 public class StreamLoopedVideoGenerationChain extends AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    public StreamLoopedVideoGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember) {
-        super(commandExecutor, nextChainMember);
+    public StreamLoopedVideoGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember, String commandWordPath) {
+        super(commandExecutor, nextChainMember, commandWordPath);
     }
 
     @Override

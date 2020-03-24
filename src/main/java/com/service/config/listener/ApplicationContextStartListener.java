@@ -1,12 +1,10 @@
 package com.service.config.listener;
 
-import com.service.stream.context.StreamContextImpl;
-import com.service.entity.StreamPortion;
+import com.service.stream.context.impl.StreamContextImpl;
 import com.service.entity.enums.StreamStatusConst;
 import com.service.entity.model.Stream;
 import com.service.stream.holder.StreamContextHolder;
 import com.service.stream.content.StreamContentInjector;
-import com.service.system.SystemResourceCleaner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
@@ -15,7 +13,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -56,8 +53,8 @@ public class ApplicationContextStartListener implements ApplicationListener<Cont
     }
 
     private void createDirectory(File streamDirectory, String streamName) {
-        boolean isFileCreated = streamDirectory.mkdir();
-        if(isFileCreated) {
+        boolean isDirectoryCreated = streamDirectory.mkdir();
+        if(isDirectoryCreated) {
             log.info("New directory was created for stream with name {}", streamName);
         }
     }

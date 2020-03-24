@@ -1,4 +1,4 @@
-package com.service.entity;
+package com.service.stream.context;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

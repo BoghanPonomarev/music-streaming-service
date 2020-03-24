@@ -1,6 +1,6 @@
 package com.service.system.impl;
 
-import com.service.entity.StreamPortion;
+import com.service.stream.context.StreamPortion;
 import com.service.system.SystemResourceCleaner;
 
 import java.util.Collection;
@@ -9,7 +9,7 @@ import java.util.Queue;
 
 public class DelaySystemResourceCleanerImpl implements SystemResourceCleaner<Collection<StreamPortion>> {
 
-    private static final int DELAY_STREAM_SEGMENTS_TO_REMOVE = 3;
+    private static final int DELAY_STREAM_SEGMENTS_TO_REMOVE = 2;
 
     private SystemResourceCleaner<Collection<StreamPortion>> systemResourceCleaner;
     private Queue<Collection<StreamPortion>> segmentsToRemove;
@@ -23,7 +23,7 @@ public class DelaySystemResourceCleanerImpl implements SystemResourceCleaner<Col
     public void cleanStreamResource(Collection<StreamPortion> resource) {
         segmentsToRemove.add(resource);
 
-        if(segmentsToRemove.size() > DELAY_STREAM_SEGMENTS_TO_REMOVE) {
+        if(segmentsToRemove.size() >= DELAY_STREAM_SEGMENTS_TO_REMOVE) {
             removeNextCollection();
         }
     }

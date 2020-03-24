@@ -19,7 +19,7 @@ public class StreamManagementController {
 
   @ResponseBody
   @PostMapping(value = "/streams/{streamName}/compile")
-  public ResponseEntity<String> createPlaylist(@PathVariable("streamName") String streamName) {
+  public ResponseEntity<String> compileStream(@PathVariable("streamName") String streamName) {
     streamManagementService.compileStream(streamName);
     return ResponseEntity.ok("OK");
   }

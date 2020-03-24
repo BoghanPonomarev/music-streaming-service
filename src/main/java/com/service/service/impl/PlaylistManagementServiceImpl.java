@@ -136,8 +136,10 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
 
   private Long getStreamIteration(String streamName) {
     StreamContext streamContext = StreamContextHolder.getStreamContext(streamName);
-    if(streamContext != null && streamContext.getCurrentStreamPortion() != null) {
-      return streamContext.getCurrentStreamPortion().getId();
+    if(streamContext != null
+            && streamContext.getStreamPortionDto() != null
+            && streamContext.getStreamPortionDto().getCurrentStreamPortion() != null) {
+      return streamContext.getStreamPortionDto().getCurrentStreamPortion().getId();
     }
     return -1L;
   }

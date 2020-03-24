@@ -14,19 +14,19 @@ import java.nio.file.Paths;
 @Slf4j
 public class StreamPlaylistGenerationChain extends AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    public StreamPlaylistGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember) {
-        super(commandExecutor, nextChainMember);
+    public StreamPlaylistGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember, String commandWordPath) {
+        super(commandExecutor, nextChainMember, commandWordPath);
     }
 
     @Override
-    public String continueAssembleStreamFiles(String loopedVideoWithAudio, String concatenatedAudios, StreamCompileContext streamCompileContext) {
+    public String continueAssembleStreamFiles(String playlistContentFilePath, String concatenatedAudios, StreamCompileContext streamCompileContext) {
         String streamName = streamCompileContext.getStreamName();
 
         String resultCompilationDirectoryPath = "src/main/resources/stream-source/" + streamName + "/" + streamCompileContext.getIteration();
         String resultStreamPlaylistFilePath = resultCompilationDirectoryPath + "/" + streamName + ".m3u8";
         createCompilationDirectory(resultCompilationDirectoryPath);
 
-        TerminalCommand videoToStreamCommand = fillPlaylistGenerationCommand(createTerminalCommand(), loopedVideoWithAudio, resultStreamPlaylistFilePath);
+        TerminalCommand videoToStreamCommand = fillPlaylistGenerationCommand(createTerminalCommand(), playlistContentFilePath, resultStreamPlaylistFilePath);
 
         commandExecutor.execute(videoToStreamCommand);
         return resultStreamPlaylistFilePath;
@@ -49,7 +49,7 @@ public class StreamPlaylistGenerationChain extends AbstractStreamFilesGeneration
 
     @Override
     public TerminalCommand createTerminalCommand() {
-        String videoToStreamCommand = "%s -i %s -bsf:v h264_mp4toannexb -c copy -hls_time 30 -hls_list_size 0 %s";
+        String videoToStreamCommand = "%s -i %s -c:v libx264 -g 125 -r:v 25 -x264opts scenecut=0:keyint_min=125 -f hls -hls_time 30 -hls_list_size 0 -preset veryfast -t 60 -max_muxing_queue_size 1024 %s";
         return new TerminalCommand(videoToStreamCommand, commandWordPath);
     }
 

@@ -7,16 +7,18 @@ import com.service.stream.compile.StreamCompileContext;
 import com.service.stream.generation.AbstractStreamFilesGenerationChain;
 import com.service.stream.generation.StreamFilesGenerationChain;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.mp4parser.IsoFile;
 import org.mp4parser.boxes.iso14496.part12.MovieHeaderBox;
 
+import java.io.File;
 import java.io.IOException;
 
 @Slf4j
 public class LastStreamVideoPieceGenerationChain extends AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    public LastStreamVideoPieceGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember) {
-        super(commandExecutor, nextChainMember);
+    public LastStreamVideoPieceGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember, String commandWordPath) {
+        super(commandExecutor, nextChainMember, commandWordPath);
     }
 
     public String continueAssembleStreamFiles(String loopedVideoWithAudioTracks, String concatenatedAudios, StreamCompileContext streamCompileContext) {
@@ -29,8 +31,9 @@ public class LastStreamVideoPieceGenerationChain extends AbstractStreamFilesGene
         String concatenatedLoopedVideo = executeWithTemporaryResult(loopedVideoWithAudioTracks, cutOriginalVideoFilePath, createTerminalCommand(), "mp4");
 
         if (nextChainMember != null) {
-            String nextChainMemberResult = nextChainMember.continueAssembleStreamFiles(concatenatedLoopedVideo, concatenatedAudios, streamCompileContext);
-            cleanResources(concatenatedLoopedVideo, cutOriginalVideoFilePath);
+            String playlistContentFile = updateAndGetPlaylistContentFile(concatenatedLoopedVideo, streamCompileContext.getStreamName());
+            String nextChainMemberResult = nextChainMember.continueAssembleStreamFiles(playlistContentFile, concatenatedAudios, streamCompileContext);
+            cleanResources(cutOriginalVideoFilePath);
             return nextChainMemberResult;
         }
         return loopedVideoWithAudioTracks;
@@ -55,6 +58,21 @@ public class LastStreamVideoPieceGenerationChain extends AbstractStreamFilesGene
         return startCutPoint;
     }
 
+    private String updateAndGetPlaylistContentFile(String filePath, String streamName) {
+        try {
+            String contentFilePath = "src/main/resources/stream-source/" + streamName + "/compiled-content.mp4";
+            File contentFile = new File(contentFilePath);
+
+            if (contentFile.exists()) {
+                FileUtils.forceDelete(contentFile);
+            }
+            FileUtils.moveFile(new File(filePath), contentFile);
+            return contentFilePath;
+        } catch (IOException ex) {
+            log.error("Failed during content file moving", ex);
+            throw new CommandExecutionException("Failed during content file moving", ex);
+        }
+    }
 
     @Override
     public TerminalCommand createTerminalCommand() {

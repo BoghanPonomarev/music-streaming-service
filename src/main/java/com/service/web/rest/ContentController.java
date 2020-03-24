@@ -3,8 +3,9 @@ package com.service.web.rest;
 import com.service.service.MediaService;
 import com.service.service.PlaylistManagementService;
 import com.service.stream.context.StreamContext;
-import com.service.entity.StreamPortion;
+import com.service.stream.context.StreamPortion;
 import com.service.service.StreamManagementService;
+import com.service.stream.context.StreamPortionDto;
 import com.service.web.builder.ResponseBuilder;
 import com.service.web.dto.BaseStreamInfoDto;
 import com.service.web.dto.BaseStreamInfoFilterDto;
@@ -31,13 +32,13 @@ public class ContentController {
 
   private final MediaService mediaService;
   private final PlaylistManagementService playlistManagementService;
-  private final ResponseBuilder<String, StreamPortion> playlistResponseBuilder;
+  private final ResponseBuilder<String, StreamPortionDto> playlistResponseBuilder;
   private final StreamManagementService streamManagementService;
 
   @GetMapping(value = "/streams/{streamName}/playlist", produces = "application/vnd.apple.mpegurl")
   public ResponseEntity<String> getPlaylist(@PathVariable("streamName") String streamName) {
     StreamContext streamContext = streamManagementService.getStreamContext(streamName);
-    return ResponseEntity.ok(playlistResponseBuilder.buildResponse(streamContext.getCurrentStreamPortion()));
+    return ResponseEntity.ok(playlistResponseBuilder.buildResponse(streamContext.getStreamPortionDto()));
   }
 
   @GetMapping(value = "/streams/{streamName}/ts/{id}", produces = "application/octet-stream")

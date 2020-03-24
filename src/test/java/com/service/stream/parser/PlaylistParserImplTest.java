@@ -1,6 +1,6 @@
 package com.service.stream.parser;
 
-import com.service.entity.StreamPortion;
+import com.service.stream.context.StreamPortion;
 import com.service.system.FileReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
