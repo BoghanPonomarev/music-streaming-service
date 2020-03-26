@@ -1,7 +1,8 @@
-package com.service.executor;
+package com.service.executor.impl;
 
 import com.service.entity.TerminalCommand;
 import com.service.exception.CommandExecutionException;
+import com.service.executor.TerminalCommandExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;

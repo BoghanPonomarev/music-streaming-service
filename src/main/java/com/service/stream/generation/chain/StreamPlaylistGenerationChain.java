@@ -1,10 +1,9 @@
-package com.service.stream.generation.impl;
+package com.service.stream.generation.chain;
 
 import com.service.entity.TerminalCommand;
+import com.service.executor.TemporaryCommandExecutor;
 import com.service.executor.TerminalCommandExecutor;
 import com.service.stream.compile.StreamCompileContext;
-import com.service.stream.generation.AbstractStreamFilesGenerationChain;
-import com.service.stream.generation.StreamFilesGenerationChain;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -14,8 +13,9 @@ import java.nio.file.Paths;
 @Slf4j
 public class StreamPlaylistGenerationChain extends AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    public StreamPlaylistGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember, String commandWordPath) {
-        super(commandExecutor, nextChainMember, commandWordPath);
+    public StreamPlaylistGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember,
+                                         String commandWordPath, TemporaryCommandExecutor temporaryCommandExecutor) {
+        super(commandExecutor, nextChainMember, commandWordPath, temporaryCommandExecutor);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class StreamPlaylistGenerationChain extends AbstractStreamFilesGeneration
 
     @Override
     public TerminalCommand createTerminalCommand() {
-        String videoToStreamCommand = "%s -i %s -c:v libx264 -g 125 -r:v 25 -x264opts scenecut=0:keyint_min=125 -f hls -hls_time 30 -hls_list_size 0 -preset veryfast -t 60 -max_muxing_queue_size 1024 %s";
+        String videoToStreamCommand = "%s -i %s -c:v libx264 -g 125 -r:v 25 -x264opts scenecut=0:keyint_min=125 -f hls -hls_time 30 -hls_list_size 0 -preset veryfast -max_muxing_queue_size 1024 %s";
         return new TerminalCommand(videoToStreamCommand, commandWordPath);
     }
 

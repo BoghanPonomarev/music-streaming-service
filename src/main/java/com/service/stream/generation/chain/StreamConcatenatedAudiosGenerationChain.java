@@ -1,18 +1,18 @@
-package com.service.stream.generation.impl;
+package com.service.stream.generation.chain;
 
 import com.service.entity.TerminalCommand;
+import com.service.executor.TemporaryCommandExecutor;
 import com.service.executor.TerminalCommandExecutor;
 import com.service.stream.compile.StreamCompileContext;
-import com.service.stream.generation.AbstractStreamFilesGenerationChain;
-import com.service.stream.generation.StreamFilesGenerationChain;
 
 import java.util.Collections;
 import java.util.List;
 
 public class StreamConcatenatedAudiosGenerationChain extends AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    public StreamConcatenatedAudiosGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember, String commandWordPath) {
-        super(commandExecutor, nextChainMember, commandWordPath);
+    public StreamConcatenatedAudiosGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember,
+                                                   String commandWordPath, TemporaryCommandExecutor temporaryCommandExecutor) {
+        super(commandExecutor, nextChainMember, commandWordPath, temporaryCommandExecutor);
     }
 
     @Override
@@ -20,7 +20,7 @@ public class StreamConcatenatedAudiosGenerationChain extends AbstractStreamFiles
         List<String> audioFilePathList = streamCompileContext.getAudioFilePathList();
         Collections.shuffle(audioFilePathList);
 
-        String longestConcatenatedFile = executeWithTemporaryResult(null, null, createConcatenateCommand(audioFilePathList), "mp3");;
+        String longestConcatenatedFile = temporaryCommandExecutor.executeWithTemporaryResult(null, null, createConcatenateCommand(audioFilePathList), "mp3");;
 
         if (nextChainMember != null) {
             String firstVideoPath = streamCompileContext.getVideoFilePath().get(0);

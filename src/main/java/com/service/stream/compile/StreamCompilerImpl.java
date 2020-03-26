@@ -6,14 +6,10 @@ import com.service.dao.VideoRepository;
 import com.service.entity.model.Audio;
 import com.service.entity.model.Stream;
 import com.service.entity.model.Video;
-import com.service.stream.generation.StreamFilesGenerationChain;
-import com.service.stream.generation.impl.StreamPlaylistGenerationChain;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.service.stream.generation.chain.StreamFilesGenerationChain;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 

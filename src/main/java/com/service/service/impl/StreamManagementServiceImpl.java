@@ -37,6 +37,7 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
     @Override
     @Transactional
     public Long createStream(String streamName) {
+        streamName = streamName.replace(" ", "-");
         Playlist newPlaylist = new Playlist();
         playlistRepository.save(newPlaylist);
 

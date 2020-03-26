@@ -1,4 +1,4 @@
-package com.service.stream.generation;
+package com.service.stream.generation.chain;
 
 import com.service.stream.compile.StreamCompileContext;
 

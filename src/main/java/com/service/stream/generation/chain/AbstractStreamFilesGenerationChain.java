@@ -1,12 +1,11 @@
-package com.service.stream.generation;
+package com.service.stream.generation.chain;
 
 import com.service.entity.TerminalCommand;
+import com.service.executor.TemporaryCommandExecutor;
 import com.service.executor.TerminalCommandExecutor;
 import com.service.stream.compile.StreamCompileContext;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +17,15 @@ public abstract class AbstractStreamFilesGenerationChain implements StreamFilesG
     protected String commandWordPath;
 
     protected TerminalCommandExecutor commandExecutor;
+    protected TemporaryCommandExecutor temporaryCommandExecutor;
     protected StreamFilesGenerationChain nextChainMember;
 
-    public AbstractStreamFilesGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember, String commandWordPath) {
+    public AbstractStreamFilesGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember,
+                                              String commandWordPath, TemporaryCommandExecutor temporaryCommandExecutor) {
         this.commandExecutor = commandExecutor;
         this.nextChainMember = nextChainMember;
         this.commandWordPath = commandWordPath;
+        this.temporaryCommandExecutor = temporaryCommandExecutor;
     }
 
     @Override
@@ -37,16 +39,6 @@ public abstract class AbstractStreamFilesGenerationChain implements StreamFilesG
     }
 
     public abstract TerminalCommand createTerminalCommand();
-
-    protected String executeWithTemporaryResult(String firstParamFile, String secondParamFile, TerminalCommand targetCommand, String outFileExtension) {
-        String outputFileName = "src/main/resources/temp/" + UUID.randomUUID() + "." + outFileExtension;
-        targetCommand.setOutputFile(outputFileName);
-        targetCommand.setFirstInputFile(firstParamFile);
-        targetCommand.setSecondInputFile(secondParamFile);
-
-        commandExecutor.execute(targetCommand);
-        return outputFileName;
-    }
 
     protected void cleanResources(String... filesToDelete) {
         for (String s : filesToDelete) {

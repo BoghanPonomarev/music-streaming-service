@@ -1,15 +1,15 @@
-package com.service.stream.generation.impl;
+package com.service.stream.generation.chain;
 
 import com.service.entity.TerminalCommand;
+import com.service.executor.TemporaryCommandExecutor;
 import com.service.executor.TerminalCommandExecutor;
 import com.service.stream.compile.StreamCompileContext;
-import com.service.stream.generation.AbstractStreamFilesGenerationChain;
-import com.service.stream.generation.StreamFilesGenerationChain;
 
 public class StreamPreviewImageGenerationChain extends AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
 
-    public StreamPreviewImageGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember, String commandWordPath) {
-        super(commandExecutor, nextChainMember, commandWordPath);
+    public StreamPreviewImageGenerationChain(TerminalCommandExecutor commandExecutor, StreamFilesGenerationChain nextChainMember,
+                                             String commandWordPath, TemporaryCommandExecutor temporaryCommandExecutor) {
+        super(commandExecutor, nextChainMember, commandWordPath, temporaryCommandExecutor);
     }
 
     @Override
