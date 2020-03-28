@@ -13,6 +13,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Slf4j
@@ -21,6 +24,7 @@ import java.util.List;
 public class ApplicationContextStartListener implements ApplicationListener<ContextRefreshedEvent> {
 
     private static final String GLOBAL_STREAM_FOLDER_PATH = "src/main/resources/stream-source/";
+    private static final String GLOBAL_TEMP_FOLDER_PATH = "src/main/resources/temp";
 
     private final JpaRepository<Stream, Long> streamRepository;
 
@@ -34,7 +38,12 @@ public class ApplicationContextStartListener implements ApplicationListener<Cont
                 .peek(this::createStreamContext)
                 .forEach(this::createStreamFolderIfNotExists);
 
+        createUtilDirectories();
         streamRepository.saveAll(streamList);
+    }
+
+    private void createUtilDirectories() {
+           createDirectory(GLOBAL_TEMP_FOLDER_PATH);
     }
 
     private void createStreamContext(Stream stream) {
@@ -47,15 +56,16 @@ public class ApplicationContextStartListener implements ApplicationListener<Cont
     private void createStreamFolderIfNotExists(Stream stream) {
         String streamName = stream.getName();
         File streamDirectory = new File(GLOBAL_STREAM_FOLDER_PATH + "/" + streamName);
-        if(!streamDirectory.exists()) {
-          createDirectory(streamDirectory, streamName);
+        if (!streamDirectory.exists()) {
+            createDirectory(GLOBAL_STREAM_FOLDER_PATH + "/" + streamName);
         }
     }
 
-    private void createDirectory(File streamDirectory, String streamName) {
-        boolean isDirectoryCreated = streamDirectory.mkdir();
-        if(isDirectoryCreated) {
-            log.info("New directory was created for stream with name {}", streamName);
+    private void createDirectory(String path) {
+        try {
+            Files.createDirectories(Paths.get(path));
+        } catch (IOException e) {
+            log.error("Failed during {} directory creation", path);
         }
     }
 

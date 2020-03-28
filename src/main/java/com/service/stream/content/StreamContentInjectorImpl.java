@@ -38,8 +38,7 @@ public class StreamContentInjectorImpl implements StreamContentInjector {
 
     private final StreamRepository streamRepository;
 
-    @Override
-    @Transactional
+    @Override //TODO now without transaction cause db interrupts long connection
     public void injectStreamContent(String streamName, boolean fullRecompile) {
         long start = System.currentTimeMillis();
         StreamContext targetStreamContext = StreamContextHolder.getStreamContext(streamName);

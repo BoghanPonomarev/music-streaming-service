@@ -56,7 +56,7 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
 
     private void createStreamDirectory(String streamName) {
         try {
-            Files.createDirectory(Paths.get(STREAM_SOURCES_FILE_PATH + "/" + streamName));
+            Files.createDirectories(Paths.get(STREAM_SOURCES_FILE_PATH + "/" + streamName));
         } catch (IOException ex) {
             log.error("Stream directory creation failed", ex);
         }
@@ -89,10 +89,11 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
 
     @Override
     public void compileStream(String streamName) {
+        streamContentInjector.injectStreamContent(streamName, true);
+
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));
 
-        streamContentInjector.injectStreamContent(streamName, true);
         if(targetStream.getStreamStatusId() == StreamStatusConst.CREATED.getId()) {
             targetStream.setStreamStatusId(StreamStatusConst.COMPILED.getId());
         }
