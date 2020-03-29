@@ -19,10 +19,11 @@ public class CompilationConfig {
     @Bean
     @Qualifier("streamStartGenerationChainMember")
     public StreamFilesGenerationChain streamStartGenerationChainMember(TerminalCommandExecutor terminalCommandExecutor,
-                                                                       StreamPlaylistGenerationChain streamPlaylistGenerationChain,
+                                                                       MoveStreamContentPortionsChain moveStreamContentPortionsChain,
                                                                        StreamContentFileUpdater streamContentFileUpdater,
                                                                        LastVideoPieceExtractor lastVideoPieceExtractor,
                                                                        TemporaryCommandExecutor temporaryCommandExecutor) {
+        StreamPlaylistGenerationChain streamPlaylistGenerationChain = new StreamPlaylistGenerationChain(terminalCommandExecutor, moveStreamContentPortionsChain, commandWordPath, temporaryCommandExecutor);
         LastStreamVideoPieceGenerationChain lastStreamVideoPieceGenerationChain = new LastStreamVideoPieceGenerationChain(terminalCommandExecutor, streamPlaylistGenerationChain, commandWordPath, streamContentFileUpdater, lastVideoPieceExtractor, temporaryCommandExecutor);
         StreamLoopedVideoGenerationChain streamLoopedVideoGenerationChain = new StreamLoopedVideoGenerationChain(terminalCommandExecutor, lastStreamVideoPieceGenerationChain, commandWordPath, temporaryCommandExecutor);
         StreamSilentVideoGenerationChain silentVideoGenerationChain = new StreamSilentVideoGenerationChain(terminalCommandExecutor, streamLoopedVideoGenerationChain, commandWordPath, temporaryCommandExecutor);
@@ -32,9 +33,9 @@ public class CompilationConfig {
     }
 
     @Bean
-    @Qualifier("streamPlaylistGenerationChainMember")
-    public StreamPlaylistGenerationChain streamPlaylistGenerationChainMember(TerminalCommandExecutor terminalCommandExecutor, TemporaryCommandExecutor temporaryCommandExecutor) {
-        return new StreamPlaylistGenerationChain(terminalCommandExecutor, null, commandWordPath, temporaryCommandExecutor);
+    @Qualifier("moveStreamContentPortionsChainMember")
+    public MoveStreamContentPortionsChain moveStreamContentPortionsChainMember(TerminalCommandExecutor terminalCommandExecutor, TemporaryCommandExecutor temporaryCommandExecutor) {
+        return new MoveStreamContentPortionsChain(terminalCommandExecutor, null, commandWordPath, temporaryCommandExecutor);
     }
 
 }

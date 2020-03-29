@@ -25,7 +25,7 @@ public class StreamCompilerImpl implements StreamCompiler {
     private final AudioRepository audioRepository;
 
     public StreamCompilerImpl(@Qualifier("streamStartGenerationChainMember") StreamFilesGenerationChain streamCompileChain,
-                              @Qualifier("streamPlaylistGenerationChainMember") StreamFilesGenerationChain streamPlaylistGenerationChain,
+                              @Qualifier("moveStreamContentPortionsChainMember") StreamFilesGenerationChain streamPlaylistGenerationChain,
                               StreamRepository streamRepository, VideoRepository videoRepository, AudioRepository audioRepository) {
         this.streamCompileChain = streamCompileChain;
         this.streamPlaylistGenerationChain = streamPlaylistGenerationChain;

@@ -10,6 +10,7 @@ import com.service.stream.parser.PlaylistParser;
 import com.service.stream.compile.StreamCompiler;
 import com.service.system.FileReader;
 import com.service.system.SystemResourceCleaner;
+import com.service.util.LockUtils;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
@@ -25,22 +28,18 @@ import java.util.concurrent.TimeUnit;
 public class StreamContentInjectorImpl implements StreamContentInjector {
 
     private static final String GLOBAL_STREAM_FOLDER_PATH = "src/main/resources/stream-source/";
-
+    private Lock injectLock = new ReentrantLock();
 
     private final FileReader fileReader;
-
-
     private final StreamCompiler streamCompiler;
-
     private final PlaylistParser<String, Queue<StreamPortion>> playlistParser;
-
     private final SystemResourceCleaner<String> stringSystemResourceCleaner;
-
     private final StreamRepository streamRepository;
 
-    @Override //TODO now without transaction cause db interrupts long connection
+    @Override
+    @Transactional
     public void injectStreamContent(String streamName, boolean fullRecompile) {
-        long start = System.currentTimeMillis();
+        LockUtils.withLock(injectLock, () -> {
         StreamContext targetStreamContext = StreamContextHolder.getStreamContext(streamName);
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));
@@ -48,7 +47,7 @@ public class StreamContentInjectorImpl implements StreamContentInjector {
         int nextCompilationIteration = getNextStreamIteration(targetStream);
         streamCompiler.compileStream(targetStream, fullRecompile);
         appendNewPortions(targetStreamContext, nextCompilationIteration);
-        log.info("Seconds spent for injection - {}",  TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
+    });
     }
 
     private Integer getNextStreamIteration(Stream stream) {
