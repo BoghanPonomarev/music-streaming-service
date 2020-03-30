@@ -99,7 +99,6 @@ public class StreamContextImpl implements StreamContext {
     @Override
     public StreamPortion getStreamPortion(Long portionId) {
         StreamSegment requestedContentSegment = contentSegments.get(portionId);
-        log.info("Stream portion with id - {} was obtained from stream with name {}, value - {}", portionId, streamName, requestedContentSegment);
         return requestedContentSegment != null ? requestedContentSegment.getStreamPortion(portionId) : null;
     }
 
@@ -121,27 +120,49 @@ public class StreamContextImpl implements StreamContext {
 
         private ScheduledExecutorService iterationScheduler;
         private Map<Long, StreamPortion> contentStreamPortions;
+        private Lock nextPortionLock = new ReentrantLock();
 
         StreamSegment(long amongIterationDelay, Map<Long, StreamPortion> contentStreamPortions) {
             this.amongIterationDelay = amongIterationDelay;
             this.contentStreamPortions = contentStreamPortions;
-            this.portionsQuantity = portionsLeft = contentStreamPortions.size();
+            this.portionsQuantity = contentStreamPortions.size();
+            this.portionsLeft = portionsQuantity - 1;
         }
 
         void startSegmentStream() {
             contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName, false));
             iterationScheduler = Executors.newScheduledThreadPool(1);
-            iterationScheduler.scheduleAtFixedRate(this::nextPortion, amongIterationDelay, amongIterationDelay, TimeUnit.SECONDS);
+            iterationScheduler.scheduleWithFixedDelay(this::nextPortion, amongIterationDelay, amongIterationDelay, TimeUnit.SECONDS);
         }
 
         private void nextPortion() {
+            LockUtils.withLock(nextPortionLock, () -> {
+                iteratePortions();
+
+                if (portionsLeft == 1) {
+                    waitLastSegmentPortion();
+                    stopSegmentStream();
+                }
+            });
+        }
+
+        void waitLastSegmentPortion() {
+            StreamPortion lastSegmentPortion = contentStreamPortions.get(currentStreamIteration);
+            Double duration = lastSegmentPortion.getDuration();
+            int secondsToSleep = duration.intValue() - 2;
+
+            if (secondsToSleep > 0 && secondsToSleep < 30) {
+                LockUtils.sleepSecondsLock(secondsToSleep);
+            }
+
+            iteratePortions();
+        }
+
+        private void iteratePortions() {
             portionsLeft--;
             currentStreamIteration++;
             log.info("Current stream iteration - {}, portion to next segment - {} in stream with name {}", currentStreamIteration,
                     portionsLeft, streamName);
-            if (portionsLeft == 0) {
-                stopSegmentStream();
-            }
         }
 
         void stopSegmentStream() {
@@ -151,9 +172,9 @@ public class StreamContextImpl implements StreamContext {
         }
 
         private void startNextSegment() {
-            StreamSegment nextSegment = contentSegments.get(currentStreamIteration);
-            log.info("Next stream segment is going to start, stream name - {}, segment value - {}", streamName, nextSegment);
             while (true) {
+                StreamSegment nextSegment = contentSegments.get(currentStreamIteration);
+                log.info("Next stream segment is going to start, stream name - {}, segment value - {}", streamName, nextSegment);
                 if (nextSegment != null) {
                     nextSegment.startSegmentStream();
                     break;

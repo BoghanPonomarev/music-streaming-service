@@ -37,20 +37,21 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
     @Override
     @Transactional
     public Long createStream(String streamName) {
-        streamName = streamName.replace(" ", "-");
+        String noSpaceStreamName = streamName.replace(" ", "-");
         Playlist newPlaylist = new Playlist();
         playlistRepository.save(newPlaylist);
 
         Stream newStream = new Stream();
-        newStream.setName(streamName);
+        newStream.setName(noSpaceStreamName);
+        newStream.setTitle(streamName);
         newStream.setPlaylistId(newPlaylist.getId());
         newStream.setStreamStatusId(StreamStatusConst.CREATED.getId());
 
         Stream savedStream = streamRepository.save(newStream);
-        createStreamDirectory(streamName);
+        createStreamDirectory(noSpaceStreamName);
 
-        StreamContext streamContext = getOrCreateStreamContext(streamName);
-        StreamContextHolder.addStreamContext(streamName, streamContext);
+        StreamContext streamContext = getOrCreateStreamContext(noSpaceStreamName);
+        StreamContextHolder.addStreamContext(noSpaceStreamName, streamContext);
         return savedStream.getId();
     }
 

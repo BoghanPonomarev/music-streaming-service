@@ -18,11 +18,14 @@ public class Stream {
 
   @Column
   private String name;
+  @Column
+  private String title;
   @Column(name = "playlist_id")
   private Long playlistId;
   @Column(name = "status_id")
   private Long streamStatusId;
   @Column(name ="compilation_iteration")
   private Integer lastCompilationIteration;
+
 
 }

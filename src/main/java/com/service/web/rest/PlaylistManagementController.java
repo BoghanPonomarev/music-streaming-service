@@ -3,10 +3,7 @@ package com.service.web.rest;
 import com.service.service.MediaService;
 import com.service.service.PlaylistManagementService;
 import com.service.service.StreamManagementService;
-import com.service.web.dto.BaseStreamInfoFilterDto;
-import com.service.web.dto.PlaylistDto;
-import com.service.web.dto.ResourceCreationResponse;
-import com.service.web.dto.BaseStreamInfoDto;
+import com.service.web.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -68,6 +65,14 @@ public class PlaylistManagementController {
   @GetMapping(value = "/playlists/{streamName}", produces = "application/json")
   public ResponseEntity<PlaylistDto> getPlaylist(@PathVariable("streamName") String streamName) {
     return ResponseEntity.ok(playlistManagementService.getPlaylist(streamName));
+  }
+
+  @ResponseBody
+  @PutMapping(value = "/playlists/{streamName}/title", produces = "application/json")
+  public ResponseEntity<String> updateTitle(@PathVariable("streamName") String streamName,
+                                                 @RequestBody StreamTitleDto streamTitleDto) {
+    playlistManagementService.updateTitle(streamName, streamTitleDto);
+    return ResponseEntity.ok("OK");
   }
 
 }

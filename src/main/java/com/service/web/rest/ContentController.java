@@ -74,4 +74,5 @@ public class ContentController {
     return ResponseEntity.ok(FileUtils.readFileToByteArray(animationPart));
   }
 
+
 }

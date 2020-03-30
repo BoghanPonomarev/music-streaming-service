@@ -46,6 +46,7 @@ DROP TABLE IF EXISTS `music`.`stream`;
 CREATE TABLE `music`.`stream` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
   `playlist_id` INT UNSIGNED NOT NULL,
   `status_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),

@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BaseStreamInfoDto {
+public class StreamTitleDto {
 
     private String streamTitle;
-    private String streamName;
-    private String status;
 
 }

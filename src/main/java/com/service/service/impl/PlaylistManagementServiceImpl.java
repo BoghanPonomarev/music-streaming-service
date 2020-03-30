@@ -11,10 +11,7 @@ import com.service.exception.EntityNotFoundException;
 import com.service.service.PlaylistManagementService;
 import com.service.stream.context.StreamContext;
 import com.service.stream.holder.StreamContextHolder;
-import com.service.web.dto.BaseStreamInfoFilterDto;
-import com.service.web.dto.MediaDto;
-import com.service.web.dto.PlaylistDto;
-import com.service.web.dto.BaseStreamInfoDto;
+import com.service.web.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -128,6 +125,7 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
             .streamId(stream.getId())
             .status(status)
             .streamName(stream.getName())
+            .streamTitle(stream.getTitle())
             .streamIteration(getStreamIteration(streamName))
             .audioIdList(audioRepository.findAllByPlaylistId(playlistId).stream().map(this::mapAudio).collect(Collectors.toList()))
             .videoIdList(videoRepository.findAllByPlaylistId(playlistId).stream().map(Video::getId).collect(Collectors.toList()))
@@ -169,6 +167,17 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
 
   private BaseStreamInfoDto extractStreamHeader(Stream stream) {
     StreamStatusConst streamStatus = StreamStatusConst.valueOf(stream.getStreamStatusId());
-    return new BaseStreamInfoDto(stream.getName(), streamStatus.getValue());
+    return new BaseStreamInfoDto(stream.getTitle(), stream.getName(), streamStatus.getValue());
   }
+
+  @Override
+  @Transactional
+  public void updateTitle(String streamName, StreamTitleDto streamTitleDto) {
+    Stream stream = streamRepository.findByName(streamName)
+            .orElseThrow(() -> new EntityNotFoundException("No such stream"));
+
+    stream.setTitle(streamTitleDto.getStreamTitle());
+    streamRepository.save(stream);
+  }
+
 }
