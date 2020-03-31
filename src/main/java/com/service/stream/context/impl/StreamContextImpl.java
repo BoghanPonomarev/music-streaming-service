@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @SuppressWarnings("UnstableApiUsage")
 public class StreamContextImpl implements StreamContext {
 
-    private static final int DEFAULT_AMONG_ITERATION_DELAY = 10;
+    private static final int DEFAULT_AMONG_ITERATION_DELAY = 30;
     private Lock appendPortionsLock = new ReentrantLock();
     private Lock startLock = new ReentrantLock();
 
@@ -71,11 +71,10 @@ public class StreamContextImpl implements StreamContext {
     private StreamSegment convertToSegment(Queue<StreamPortion> streamPortions) {
         Map<Long, StreamPortion> portionsMap = recollectToMap(streamPortions);
 
-        double portionAmongIterationDelay = portionsMap.values().stream()
-                .mapToDouble(StreamPortion::getDuration)
-                .average().orElse(DEFAULT_AMONG_ITERATION_DELAY);
-
-        return new StreamSegment((long) portionAmongIterationDelay, portionsMap);
+        if(totalStreamPortionsQuantity == 0) {
+            return new StreamSegment(DEFAULT_AMONG_ITERATION_DELAY, portionsMap.size() - 1, portionsMap);
+        }
+        return new StreamSegment(DEFAULT_AMONG_ITERATION_DELAY, portionsMap.size(), portionsMap);
     }
 
     private Map<Long, StreamPortion> recollectToMap(Queue<StreamPortion> streamPortions) {
@@ -83,8 +82,8 @@ public class StreamContextImpl implements StreamContext {
         Map<Long, StreamPortion> contentStreamPortions = new ConcurrentHashMap<>();
 
         StreamPortion streamPortion = streamPortions.poll();
-
         if (streamPortion != null) streamPortion.setFirstPortionInSegment(true);
+
         while (streamPortion != null) {
             streamPortion.setId(++nextStreamPortionId);
             streamPortion.setStreamName(streamName);
@@ -122,11 +121,11 @@ public class StreamContextImpl implements StreamContext {
         private Map<Long, StreamPortion> contentStreamPortions;
         private Lock nextPortionLock = new ReentrantLock();
 
-        StreamSegment(long amongIterationDelay, Map<Long, StreamPortion> contentStreamPortions) {
+        StreamSegment(long amongIterationDelay, long portionsLeft, Map<Long, StreamPortion> contentStreamPortions) {
             this.amongIterationDelay = amongIterationDelay;
             this.contentStreamPortions = contentStreamPortions;
             this.portionsQuantity = contentStreamPortions.size();
-            this.portionsLeft = portionsQuantity - 1;
+            this.portionsLeft = portionsLeft;
         }
 
         void startSegmentStream() {
@@ -139,7 +138,7 @@ public class StreamContextImpl implements StreamContext {
             LockUtils.withLock(nextPortionLock, () -> {
                 iteratePortions();
 
-                if (portionsLeft == 1) {
+                if (portionsLeft <= 1) {
                     waitLastSegmentPortion();
                     stopSegmentStream();
                 }

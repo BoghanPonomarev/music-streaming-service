@@ -1,0 +1,14 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "azazelovi4up/music-service:0.3",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "HostPort": "8080",
+      "ContainerPort": "8080"
+    }
+  ],
+  "Logging": "/var/log/nginx"
+}
