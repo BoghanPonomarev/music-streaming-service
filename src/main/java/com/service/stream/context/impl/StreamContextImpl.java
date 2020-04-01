@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @SuppressWarnings("UnstableApiUsage")
 public class StreamContextImpl implements StreamContext {
 
-    private static final int DEFAULT_AMONG_ITERATION_DELAY = 30;
+    private static final int DEFAULT_AMONG_ITERATION_DELAY = 5;
     private Lock appendPortionsLock = new ReentrantLock();
     private Lock startLock = new ReentrantLock();
 
@@ -103,7 +103,8 @@ public class StreamContextImpl implements StreamContext {
 
     @Override
     public StreamPortionDto getStreamPortionDto() {
-        return new StreamPortionDto(getStreamPortion(currentStreamIteration), getStreamPortion(currentStreamIteration - 1));
+        return new StreamPortionDto(getStreamPortion(currentStreamIteration),
+                getStreamPortion(currentStreamIteration - 1));
     }
 
     @Override
@@ -129,6 +130,7 @@ public class StreamContextImpl implements StreamContext {
         }
 
         void startSegmentStream() {
+            log.info("Stream segment starting {}", this);
             contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName, false));
             iterationScheduler = Executors.newScheduledThreadPool(1);
             iterationScheduler.scheduleWithFixedDelay(this::nextPortion, amongIterationDelay, amongIterationDelay, TimeUnit.SECONDS);
@@ -148,9 +150,9 @@ public class StreamContextImpl implements StreamContext {
         void waitLastSegmentPortion() {
             StreamPortion lastSegmentPortion = contentStreamPortions.get(currentStreamIteration);
             Double duration = lastSegmentPortion.getDuration();
-            int secondsToSleep = duration.intValue() - 2;
+            int secondsToSleep = duration.intValue() - 1;
 
-            if (secondsToSleep > 0 && secondsToSleep < 30) {
+            if (secondsToSleep > 0 && secondsToSleep < 5) {
                 LockUtils.sleepSecondsLock(secondsToSleep);
             }
 
@@ -178,7 +180,8 @@ public class StreamContextImpl implements StreamContext {
                     nextSegment.startSegmentStream();
                     break;
                 }
-                LockUtils.sleepSecondsLock(5);
+                contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName, false));
+                LockUtils.sleepSecondsLock(30);
             }
         }
 

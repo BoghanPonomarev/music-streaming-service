@@ -13,7 +13,7 @@ public class PlaylistResponseBuilder implements ResponseBuilder<String, StreamPo
 
     private static final String GENERAL_PLAYLIST_TAGS = "#EXTM3U\n" +
             "#EXT-X-VERSION:3\n" +
-            "#EXT-X-TARGETDURATION:30\n";
+            "#EXT-X-TARGETDURATION:5\n";
     private static final String PLAYLIST_ID_TAG = "#EXT-X-MEDIA-SEQUENCE:";
     private static final String DURATION_TAG = "#EXTINF:";
 

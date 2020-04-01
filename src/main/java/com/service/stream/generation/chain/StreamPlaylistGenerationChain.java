@@ -55,7 +55,7 @@ public class StreamPlaylistGenerationChain extends AbstractStreamFilesGeneration
 
     @Override
     public TerminalCommand createTerminalCommand() {
-        String videoToStreamCommand = "%s -i %s -c:v libx264 -g 125 -r:v 25 -x264opts scenecut=0:keyint_min=125 -f hls -hls_time 30 -hls_list_size 0 -preset veryfast -max_muxing_queue_size 1024 %s";
+        String videoToStreamCommand = "%s -i %s -c:v libx264 -g 125 -r:v 25 -x264opts scenecut=0:keyint_min=125 -f hls -hls_time 5 -hls_list_size 0 -preset veryfast -max_muxing_queue_size 1024 %s";
         return new TerminalCommand(videoToStreamCommand, commandWordPath);
     }
 
