@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "azazelovi4up/music-service:0.6",
+    "Name": "azazelovi4up/music-service:0.7",
     "Update": "true"
   },
   "Ports": [
