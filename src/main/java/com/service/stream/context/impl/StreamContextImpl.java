@@ -1,5 +1,6 @@
 package com.service.stream.context.impl;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
@@ -103,8 +104,9 @@ public class StreamContextImpl implements StreamContext {
 
     @Override
     public StreamPortionDto getStreamPortionDto() {
-        return new StreamPortionDto(getStreamPortion(currentStreamIteration),
-                getStreamPortion(currentStreamIteration - 1));
+        return new StreamPortionDto(Lists.newArrayList(getStreamPortion(currentStreamIteration - 1),
+                getStreamPortion(currentStreamIteration) , getStreamPortion(currentStreamIteration + 1),
+                getStreamPortion(currentStreamIteration + 2)));
     }
 
     @Override

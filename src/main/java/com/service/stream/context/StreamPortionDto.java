@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class StreamPortionDto {
 
-    private StreamPortion currentStreamPortion;
-    private StreamPortion previousStreamPortion;
+    private List<StreamPortion> streamPortions;
 
 }

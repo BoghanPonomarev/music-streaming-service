@@ -136,8 +136,8 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
     StreamContext streamContext = StreamContextHolder.getStreamContext(streamName);
     if(streamContext != null
             && streamContext.getStreamPortionDto() != null
-            && streamContext.getStreamPortionDto().getCurrentStreamPortion() != null) {
-      return streamContext.getStreamPortionDto().getCurrentStreamPortion().getId();
+            && streamContext.getStreamPortionDto().getStreamPortions().get(1) != null) {
+      return streamContext.getStreamPortionDto().getStreamPortions().get(1).getId();
     }
     return -1L;
   }

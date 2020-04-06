@@ -5,6 +5,8 @@ import com.service.stream.context.StreamPortion;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class PlaylistResponseBuilder implements ResponseBuilder<String, StreamPortionDto> {
 
@@ -19,40 +21,49 @@ public class PlaylistResponseBuilder implements ResponseBuilder<String, StreamPo
 
     @Override
     public String buildResponse(StreamPortionDto streamPortionDto) {
-        if (streamPortionDto.getPreviousStreamPortion() == null) {
+      /*  if (streamPortionDto.getPreviousStreamPortion() == null) {
             return buildStartPlaylistTags(streamPortionDto);
-        }
+        }*/
 
         return buildPlaylistTags(streamPortionDto);
     }
 
-    private String buildStartPlaylistTags(StreamPortionDto streamPortionDto) {
+  /*  private String buildStartPlaylistTags(StreamPortionDto streamPortionDto) {
         StreamPortion currentStreamPortion = streamPortionDto.getCurrentStreamPortion();
 
         return GENERAL_PLAYLIST_TAGS +
                 PLAYLIST_ID_TAG + currentStreamPortion.getId() + "\n" +
                 DURATION_TAG + currentStreamPortion.getDuration() + ",\n" +
                 serverUrl + "/api/v1/streams/" + currentStreamPortion.getStreamName() + "/ts/" + currentStreamPortion.getId();
-    }
+    }*/
 
     private String buildPlaylistTags(StreamPortionDto streamPortionDto) {
-        StreamPortion currentStreamPortion = streamPortionDto.getCurrentStreamPortion();
-        StreamPortion previousStreamPortion = streamPortionDto.getPreviousStreamPortion();
+        List<StreamPortion> streamPortions = streamPortionDto.getStreamPortions();
+        StreamPortion currentStreamPortion = streamPortions.get(1);
 
         String streamName = currentStreamPortion.getStreamName();
         Long currentStreamPortionId = currentStreamPortion.getId();
 
-        return GENERAL_PLAYLIST_TAGS +
-                PLAYLIST_ID_TAG + currentStreamPortionId + "\n" +
-                DURATION_TAG + previousStreamPortion.getDuration() + ",\n" +
-                serverUrl + "/api/v1/streams/" + streamName + "/ts/" + previousStreamPortion.getId() + "\n" +
-                getStreamSegmentDelimiter(streamPortionDto) +
-                DURATION_TAG + currentStreamPortion.getDuration() + ",\n" +
-                serverUrl + "/api/v1/streams/" + streamName + "/ts/" + currentStreamPortionId;
+        StringBuilder  resultPlaylistText = new StringBuilder(GENERAL_PLAYLIST_TAGS +
+                PLAYLIST_ID_TAG + currentStreamPortionId + "\n");
+
+        for(int i = 0; i< streamPortions.size() - 1; i++) {
+            StreamPortion tmpStreamPortion = streamPortions.get(i);
+            resultPlaylistText.append(DURATION_TAG).append(tmpStreamPortion.getDuration())
+                    .append(",\n").append(serverUrl).append("/api/v1/streams/").append(streamName)
+                    .append("/ts/").append(tmpStreamPortion.getId()).append("\n")
+                    .append(getStreamSegmentDelimiter(streamPortions.get(i + 1)));
+        }
+        StreamPortion lastStreamPortion = streamPortions.get(streamPortions.size() - 1);
+        resultPlaylistText.append(DURATION_TAG).append(lastStreamPortion.getDuration())
+                .append(",\n").append(serverUrl).append("/api/v1/streams/").append(streamName)
+                .append("/ts/").append(lastStreamPortion.getId());
+
+        return resultPlaylistText.toString();
     }
 
-    private String getStreamSegmentDelimiter(StreamPortionDto streamPortionDto) {
-        return (streamPortionDto.getCurrentStreamPortion().isFirstPortionInSegment()) ? "#EXT-X-DISCONTINUITY\n" : "";
+    private String getStreamSegmentDelimiter(StreamPortion streamPortion) {
+        return (streamPortion.isFirstPortionInSegment()) ? "#EXT-X-DISCONTINUITY\n" : "";
     }
 
 }
