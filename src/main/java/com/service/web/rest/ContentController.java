@@ -49,9 +49,22 @@ public class ContentController {
   }
 
   @GetMapping(value = "/streams/{streamName}/pr", produces = MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<FileSystemResource> getImage(@PathVariable("streamName") String streamName) {
-    File file = new File("src/main/resources/stream-source/"+streamName+"/"+ streamName + "-pr.jpg");
-    return ResponseEntity.ok(new FileSystemResource(file));
+  public ResponseEntity<FileSystemResource> getPreview(@PathVariable("streamName") String streamName) {
+    return responseFile("src/main/resources/stream-source/"+streamName+"/"+ streamName + "-pr.jpg");
+  }
+
+  @GetMapping(value = "/streams/{streamName}/contentfile", produces = MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<FileSystemResource> getContentFile(@PathVariable("streamName") String streamName) {
+    return responseFile("src/main/resources/stream-source/"+streamName+"/compiled-content.mp4");
+  }
+
+  private ResponseEntity<FileSystemResource> responseFile(String filePath) {
+    File file = new File(filePath);
+
+    if(file.exists()) {
+      return ResponseEntity.ok(new FileSystemResource(file));
+    }
+    return null;
   }
 
   @ResponseBody
@@ -73,6 +86,5 @@ public class ContentController {
     File animationPart = mediaService.getAudio(id);
     return ResponseEntity.ok(FileUtils.readFileToByteArray(animationPart));
   }
-
 
 }

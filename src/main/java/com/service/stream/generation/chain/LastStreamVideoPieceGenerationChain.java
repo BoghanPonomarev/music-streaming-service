@@ -1,15 +1,12 @@
 package com.service.stream.generation.chain;
 
 import com.service.entity.TerminalCommand;
-import com.service.exception.CommandExecutionException;
 import com.service.executor.TemporaryCommandExecutor;
 import com.service.executor.TerminalCommandExecutor;
 import com.service.stream.compile.StreamCompileContext;
 import com.service.stream.generation.LastVideoPieceExtractor;
 import com.service.stream.generation.StreamContentFileUpdater;
 import lombok.extern.slf4j.Slf4j;
-import org.mp4parser.IsoFile;
-import org.mp4parser.boxes.iso14496.part12.MovieHeaderBox;
 
 import java.io.*;
 import java.util.UUID;
@@ -30,11 +27,13 @@ public class LastStreamVideoPieceGenerationChain extends AbstractStreamFilesGene
     }
 
     public String continueAssembleStreamFiles(String loopedVideoWithAudioTracks, String concatenatedAudios, StreamCompileContext streamCompileContext) {
-        String lastVideoPieceFilePath = lastVideoPieceExtractor.extractLastVideoPiece(loopedVideoWithAudioTracks, streamCompileContext);
-        String streamContentVideo = concatenateVideos(loopedVideoWithAudioTracks, lastVideoPieceFilePath);
+        String lastVideoPieceFilePath = executeIfFullCompilation(() -> lastVideoPieceExtractor.extractLastVideoPiece(loopedVideoWithAudioTracks, streamCompileContext),
+                streamCompileContext);
+
+        String streamContentVideo = executeIfFullCompilation(() -> concatenateVideos(loopedVideoWithAudioTracks, lastVideoPieceFilePath), streamCompileContext);
 
         if (nextChainMember != null) {
-            String playlistContentFile = streamContentFileUpdater.updateStreamContentFile(streamContentVideo, streamCompileContext.getStreamName());
+            String playlistContentFile = streamContentFileUpdater.updateStreamContentFile(streamContentVideo, streamCompileContext.getStreamName(), !streamCompileContext.isOnlyTsRecompilation());
             String nextChainMemberResult = nextChainMember.continueAssembleStreamFiles(playlistContentFile, concatenatedAudios, streamCompileContext);
             cleanResources(lastVideoPieceFilePath);
             return nextChainMemberResult;

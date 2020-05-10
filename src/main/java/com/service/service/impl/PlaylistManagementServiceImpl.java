@@ -60,12 +60,8 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
     videoRepository.deleteAllByPlaylistId(playlistId);
 
     for (Video video : videosToDelete) {
-      String filePath = video.getFilePath();
-      try {
-        Files.delete(Paths.get(filePath));
-      } catch (IOException e) {
-        log.error("Failed during video files deletion, playlist id - {}", playlistId);
-      }
+      String filePathToDelete = video.getFilePath();
+      deleteFile(filePathToDelete);
     }
   }
 
@@ -87,13 +83,7 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
     String noSpacesOriginalFileName = originalFileName.replace(" ", "");
     String saveFilePath = STREAM_SOURCES_FILE_PATH + "/" + streamName + "/" + noSpacesOriginalFileName;
 
-    try {
-      File destinationFile = new File(saveFilePath);
-      destinationFile.createNewFile();
-      FileUtils.copyInputStreamToFile(inputStream, destinationFile);
-    } catch (IOException ex) {
-      log.error("File creation failed, target stream name - {} ", streamName, ex);
-    }
+    createFileFromStream(saveFilePath, inputStream);
 
     return new File(saveFilePath);
   }
@@ -103,13 +93,8 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
   public void deleteAudioFile(Long audioId) {
     Audio audioToDelete = audioRepository.findById(audioId)
             .orElseThrow(() -> new EntityNotFoundException("No such file"));
-    audioRepository.deleteById(audioId);
 
-    try {
-      Files.delete(Paths.get(audioToDelete.getFilePath()));
-    } catch (IOException ex) {
-      log.error("Failed during audio file deletion, target audio file id - {}", audioId, ex);
-    }
+     deleteFile(audioToDelete.getFilePath());
   }
 
   @Override
@@ -178,6 +163,42 @@ public class PlaylistManagementServiceImpl implements PlaylistManagementService 
 
     stream.setTitle(streamTitleDto.getStreamTitle());
     streamRepository.save(stream);
+  }
+
+  @Override
+  public void updatePreview(String streamName, InputStream videoInputStream) {
+    String previewFilePath = STREAM_SOURCES_FILE_PATH + "/" + streamName + "/" + streamName + "-pr.jpg";
+
+    deleteFile(previewFilePath);
+
+    createFileFromStream(previewFilePath, videoInputStream);
+  }
+
+  @Override
+  public void updateCompiledContentFile(String streamName, InputStream videoInputStream) {
+    String previewFilePath = STREAM_SOURCES_FILE_PATH + "/" + streamName + "/compiled-content.mp4";
+
+    deleteFile(previewFilePath);
+
+    createFileFromStream(previewFilePath, videoInputStream);
+  }
+
+  private void createFileFromStream(String filePath, InputStream inputStream) {
+    try {
+      File destinationFile = new File(filePath);
+      destinationFile.createNewFile();
+      FileUtils.copyInputStreamToFile(inputStream, destinationFile);
+    } catch (IOException ex) {
+      log.error("File creation failed, target stream name - {} ", filePath, ex);
+    }
+  }
+
+  private void deleteFile(String filePath) {
+    try {
+      Files.delete(Paths.get(filePath));
+    } catch (IOException e) {
+      log.error("Failed during file deletion, file path - {}", filePath);
+    }
   }
 
 }

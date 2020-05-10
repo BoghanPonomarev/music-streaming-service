@@ -133,7 +133,7 @@ public class StreamContextImpl implements StreamContext {
 
         void startSegmentStream() {
             log.info("Stream segment starting {}", this);
-            contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName, false));
+            contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName, false, false));
             iterationScheduler = Executors.newScheduledThreadPool(1);
             iterationScheduler.scheduleWithFixedDelay(this::nextPortion, amongIterationDelay, amongIterationDelay, TimeUnit.SECONDS);
         }
@@ -182,7 +182,7 @@ public class StreamContextImpl implements StreamContext {
                     nextSegment.startSegmentStream();
                     break;
                 }
-                contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName, false));
+                contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName, false, false));
                 LockUtils.sleepSecondsLock(30);
             }
         }

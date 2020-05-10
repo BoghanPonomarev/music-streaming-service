@@ -14,9 +14,13 @@ import java.io.IOException;
 public class StreamContentFileUpdaterImpl implements StreamContentFileUpdater {
 
     @Override
-    public String updateStreamContentFile(String newContentFilePath, String streamName) {
+    public String updateStreamContentFile(String newContentFilePath, String streamName, boolean isStrictUpdate) {
+        String contentFilePath = "src/main/resources/stream-source/" + streamName + "/compiled-content.mp4";
+        if(!isStrictUpdate) {
+            return contentFilePath;
+        }
+
         try {
-            String contentFilePath = "src/main/resources/stream-source/" + streamName + "/compiled-content.mp4";
             File contentFile = new File(contentFilePath);
 
             if (contentFile.exists()) {

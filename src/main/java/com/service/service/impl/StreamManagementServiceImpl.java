@@ -71,7 +71,7 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
     @Override
     public void startStream(String streamName) {
         StreamContext streamContext = StreamContextHolder.getStreamContext(streamName);
-        streamContentInjector.injectStreamContent(streamName, false);
+        streamContentInjector.injectStreamContent(streamName, false, false);
 
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));
@@ -89,8 +89,8 @@ public class StreamManagementServiceImpl implements StreamManagementService { //
     }
 
     @Override
-    public void compileStream(String streamName) {
-        streamContentInjector.injectStreamContent(streamName, true);
+    public void compileStream(String streamName, boolean isOnlyTsRecompilation) {
+        streamContentInjector.injectStreamContent(streamName, true, isOnlyTsRecompilation);
 
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));

@@ -13,7 +13,7 @@ public interface StreamManagementService {
 
     void startStream(String streamName);
 
-    void compileStream(String streamName);
+    void compileStream(String streamName, boolean isOnlyTsRecompilation);
 
     void deleteStream(String streamName) throws IOException;
 }

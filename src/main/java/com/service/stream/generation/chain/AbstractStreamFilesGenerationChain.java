@@ -9,7 +9,7 @@ import org.apache.tomcat.util.http.fileupload.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.function.Supplier;
 
 @Slf4j
 public abstract class AbstractStreamFilesGenerationChain implements StreamFilesGenerationChain {
@@ -43,11 +43,20 @@ public abstract class AbstractStreamFilesGenerationChain implements StreamFilesG
     protected void cleanResources(String... filesToDelete) {
         for (String s : filesToDelete) {
             try {
-                FileUtils.forceDelete(new File(s));
+                if(s != null) {
+                    FileUtils.forceDelete(new File(s));
+                }
             } catch (IOException ex) {
                 log.error("Failed during stream compilation in resources cleaning", ex);
             }
         }
+    }
+
+    protected <R> R executeIfFullCompilation(Supplier<R> function, StreamCompileContext streamCompileContext) {
+        if(!streamCompileContext.isOnlyTsRecompilation()) {
+            return function.get();
+        }
+        return null;
     }
 
 }

@@ -35,11 +35,11 @@ public class StreamCompilerImpl implements StreamCompiler {
     }
 
     @Override
-    public void compileStream(Stream targetStream, boolean fullRecompile) {
+    public void compileStream(Stream targetStream, boolean isFullRecompile, boolean isOnlyTsCompilation) {
         Integer newCompilationIteration = getNextStreamIteration(targetStream);
-        StreamCompileContext streamCompileContext = buildStreamCompileContext(targetStream, newCompilationIteration);
+        StreamCompileContext streamCompileContext = buildStreamCompileContext(targetStream, newCompilationIteration, isOnlyTsCompilation);
 
-        assembleStream(streamCompileContext, fullRecompile);
+        assembleStream(streamCompileContext, isFullRecompile);
 
         targetStream.setLastCompilationIteration(newCompilationIteration);
         streamRepository.save(targetStream);
@@ -50,7 +50,7 @@ public class StreamCompilerImpl implements StreamCompiler {
         return compilationIteration != null ? compilationIteration + 1 : 1;
     }
 
-    private StreamCompileContext buildStreamCompileContext(Stream stream, int newCompilationIteration) {
+    private StreamCompileContext buildStreamCompileContext(Stream stream, int newCompilationIteration, boolean isOnlyTsCompilation) {
         List<String> streamVideosPaths = videoRepository.findAllByPlaylistId(stream.getPlaylistId())
                 .stream().map(Video::getFilePath)
                 .collect(Collectors.toList());
@@ -58,14 +58,14 @@ public class StreamCompilerImpl implements StreamCompiler {
                 .stream().map(Audio::getFilePath)
                 .collect(Collectors.toList());
 
-        return new StreamCompileContext(newCompilationIteration, stream.getName(), streamVideosPaths, streamAudiosPathList);
+        return new StreamCompileContext(newCompilationIteration, stream.getName(), isOnlyTsCompilation, streamVideosPaths, streamAudiosPathList);
     }
 
-    private void assembleStream(StreamCompileContext streamCompileContext, boolean fullRecompile) {
+    private void assembleStream(StreamCompileContext streamCompileContext, boolean isFullRecompile) {
         String compiledPlaylistVideoPath = "src/main/resources/stream-source/" +
                 streamCompileContext.getStreamName() + "/compiled-content.mp4";
 
-        if (fullRecompile) {
+        if (isFullRecompile) {
             streamCompileChain.startAssembleStreamFiles(streamCompileContext);
         } else {
             streamPlaylistGenerationChain.continueAssembleStreamFiles(compiledPlaylistVideoPath, null, streamCompileContext);

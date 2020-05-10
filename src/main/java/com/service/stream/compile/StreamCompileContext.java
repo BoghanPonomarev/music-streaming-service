@@ -15,6 +15,7 @@ public class StreamCompileContext {
 
   private Integer iteration;
   private String streamName;
+  private boolean isOnlyTsRecompilation;
   private List<String> videoFilePath;
   private List<String> audioFilePathList;
 

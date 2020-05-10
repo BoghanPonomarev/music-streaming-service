@@ -1,6 +1,7 @@
 package com.service.web.rest;
 
 import com.service.service.StreamManagementService;
+import com.service.web.dto.CompileStreamRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,10 @@ public class StreamManagementController {
   private final StreamManagementService streamManagementService;
 
   @ResponseBody
-  @PostMapping(value = "/streams/{streamName}/compile")
-  public ResponseEntity<String> compileStream(@PathVariable("streamName") String streamName) {
-    streamManagementService.compileStream(streamName);
+  @PostMapping(value = "/streams/{streamName}/compile", consumes = "application/json")
+  public ResponseEntity<String> compileStream(@PathVariable("streamName") String streamName,
+                                              @RequestBody CompileStreamRequestDto compileStreamRequestDto) {
+    streamManagementService.compileStream(streamName, compileStreamRequestDto.getIsOnlyTsRecompilation());
     return ResponseEntity.ok("OK");
   }
 

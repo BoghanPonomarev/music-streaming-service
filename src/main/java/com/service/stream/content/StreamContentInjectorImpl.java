@@ -38,14 +38,14 @@ public class StreamContentInjectorImpl implements StreamContentInjector {
 
     @Override
     @Transactional
-    public void injectStreamContent(String streamName, boolean fullRecompile) {
+    public void injectStreamContent(String streamName, boolean isFullRecompile, boolean isOnlyTsRecompilation) {
         LockUtils.withLock(injectLock, () -> {
         StreamContext targetStreamContext = StreamContextHolder.getStreamContext(streamName);
         Stream targetStream = streamRepository.findByName(streamName)
                 .orElseThrow(() -> new EntityNotFoundException("No such stream"));
 
         int nextCompilationIteration = getNextStreamIteration(targetStream);
-        streamCompiler.compileStream(targetStream, fullRecompile);
+        streamCompiler.compileStream(targetStream, isFullRecompile, isOnlyTsRecompilation);
         appendNewPortions(targetStreamContext, nextCompilationIteration);
     });
     }

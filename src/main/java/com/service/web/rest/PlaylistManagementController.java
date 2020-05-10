@@ -1,12 +1,13 @@
 package com.service.web.rest;
 
-import com.service.service.MediaService;
 import com.service.service.PlaylistManagementService;
 import com.service.service.StreamManagementService;
-import com.service.web.dto.*;
+import com.service.web.dto.PlaylistDto;
+import com.service.web.dto.ResourceCreationResponse;
+import com.service.web.dto.StreamTitleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -28,7 +28,6 @@ public class PlaylistManagementController {
 
   private final PlaylistManagementService playlistManagementService;
   private final StreamManagementService streamManagementService;
-  private final MediaService mediaService;
 
   @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)
@@ -52,6 +51,21 @@ public class PlaylistManagementController {
                                                                  @RequestPart("audio") MultipartFile video) throws IOException {
     Long newAudioId = playlistManagementService.addAudioFile(streamName, video.getInputStream(), video.getOriginalFilename());
     return ResponseEntity.ok(new ResourceCreationResponse<>(newAudioId));
+  }
+
+
+  @PutMapping(value = "/streams/{streamName}/pr", produces = MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<String> updatePreview(@PathVariable("streamName") String streamName,
+                                                          @RequestPart("preview") MultipartFile previewFile) throws IOException {
+    playlistManagementService.updatePreview(streamName, previewFile.getInputStream());
+    return ResponseEntity.ok("OK");
+  }
+
+  @PutMapping(value = "/streams/{streamName}/contentfile", produces = MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<String> getContentFile(@PathVariable("streamName") String streamName,
+                                                           @RequestPart("content") MultipartFile fullContentFile) throws IOException {
+    playlistManagementService.updateCompiledContentFile(streamName, fullContentFile.getInputStream());
+    return ResponseEntity.ok("OK");
   }
 
   @ResponseBody

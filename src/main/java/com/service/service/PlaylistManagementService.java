@@ -22,4 +22,7 @@ public interface PlaylistManagementService {
 
   void updateTitle(String streamName, StreamTitleDto streamTitleDto);
 
+  void updatePreview(String streamName, InputStream videoInputStream);
+
+  void updateCompiledContentFile(String streamName, InputStream videoInputStream);
 }

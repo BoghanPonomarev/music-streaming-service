@@ -17,10 +17,8 @@ public class StreamConcatenatedAudiosGenerationChain extends AbstractStreamFiles
 
     @Override
     public String continueAssembleStreamFiles(String firstAssembleSourceFilePath, String secondAssembleSourceFilePath, StreamCompileContext streamCompileContext) {
-        List<String> audioFilePathList = streamCompileContext.getAudioFilePathList();
-        Collections.shuffle(audioFilePathList);
-
-        String longestConcatenatedFile = temporaryCommandExecutor.executeWithTemporaryResult(null, null, createConcatenateCommand(audioFilePathList), "mp3");;
+        String longestConcatenatedFile = executeIfFullCompilation(() -> assembleLongestConcatenatedFile(streamCompileContext),
+                streamCompileContext);
 
         if (nextChainMember != null) {
             String firstVideoPath = streamCompileContext.getVideoFilePath().get(0);
@@ -31,9 +29,16 @@ public class StreamConcatenatedAudiosGenerationChain extends AbstractStreamFiles
         return longestConcatenatedFile;
     }
 
+    private String assembleLongestConcatenatedFile(StreamCompileContext streamCompileContext) {
+        List<String> audioFilePathList = streamCompileContext.getAudioFilePathList();
+        Collections.shuffle(audioFilePathList);
+
+        return temporaryCommandExecutor.executeWithTemporaryResult(null, null, createConcatenateCommand(audioFilePathList), "mp3");
+    }
+
     @Override
     public TerminalCommand createTerminalCommand() {
-       return null;
+        return null;
     }
 
     private TerminalCommand createConcatenateCommand(List<String> filePathsToConcatenate) {

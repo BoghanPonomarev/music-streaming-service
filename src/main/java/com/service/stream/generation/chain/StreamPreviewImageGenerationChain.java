@@ -14,13 +14,17 @@ public class StreamPreviewImageGenerationChain extends AbstractStreamFilesGenera
 
     @Override
     public String startAssembleStreamFiles(StreamCompileContext streamCompileContext) {
-        TerminalCommand extractImageCommand = fillPreviewImageGenerationCommand(createTerminalCommand(), streamCompileContext);
+        TerminalCommand extractImageCommand = null;
 
-        commandExecutor.execute(extractImageCommand);
+        if(!streamCompileContext.isOnlyTsRecompilation()) {
+            extractImageCommand = fillPreviewImageGenerationCommand(createTerminalCommand(), streamCompileContext);
+            commandExecutor.execute(extractImageCommand);
+        }
+
         if(nextChainMember != null) {
             return nextChainMember.continueAssembleStreamFiles(null, null, streamCompileContext);
         }
-        return extractImageCommand.getOutputFile();
+        return extractImageCommand != null ? extractImageCommand.getOutputFile() : null;
     }
 
     private TerminalCommand fillPreviewImageGenerationCommand(TerminalCommand extractImageCommand, StreamCompileContext streamCompileContext) {

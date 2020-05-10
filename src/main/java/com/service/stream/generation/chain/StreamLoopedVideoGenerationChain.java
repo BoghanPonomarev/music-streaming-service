@@ -14,9 +14,11 @@ public class StreamLoopedVideoGenerationChain extends AbstractStreamFilesGenerat
 
     @Override
     public String continueAssembleStreamFiles(String silentVideoFilePath, String concatenatedAudios, StreamCompileContext streamCompileContext) {
-        String loopedVideoWithAudioTracks = temporaryCommandExecutor.executeWithTemporaryResult(silentVideoFilePath, concatenatedAudios, createTerminalCommand(), "mp4");
+        String loopedVideoWithAudioTracks = executeIfFullCompilation(() ->
+                temporaryCommandExecutor.executeWithTemporaryResult(silentVideoFilePath, concatenatedAudios, createTerminalCommand(), "mp4"),
+        streamCompileContext);
 
-        if(nextChainMember != null) {
+        if (nextChainMember != null) {
             String nextChainMemberResult = nextChainMember.continueAssembleStreamFiles(loopedVideoWithAudioTracks, concatenatedAudios, streamCompileContext);
             cleanResources(loopedVideoWithAudioTracks);
             return nextChainMemberResult;

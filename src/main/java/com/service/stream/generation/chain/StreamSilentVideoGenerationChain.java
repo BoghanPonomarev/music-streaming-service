@@ -14,9 +14,11 @@ public class StreamSilentVideoGenerationChain extends AbstractStreamFilesGenerat
 
     @Override
     public String continueAssembleStreamFiles(String videoFilePath, String concatenatedAudios, StreamCompileContext streamCompileContext) {
-        String silentVideoFilePath = temporaryCommandExecutor.executeWithTemporaryResult(videoFilePath, concatenatedAudios, createTerminalCommand(), "mp4");
+        String silentVideoFilePath = executeIfFullCompilation(() ->
+                temporaryCommandExecutor.executeWithTemporaryResult(videoFilePath, concatenatedAudios, createTerminalCommand(), "mp4"),
+                streamCompileContext);
 
-        if(nextChainMember != null) {
+        if (nextChainMember != null) {
             String nextChainMemberResult = nextChainMember.continueAssembleStreamFiles(silentVideoFilePath, concatenatedAudios, streamCompileContext);
             cleanResources(silentVideoFilePath);
             return nextChainMemberResult;

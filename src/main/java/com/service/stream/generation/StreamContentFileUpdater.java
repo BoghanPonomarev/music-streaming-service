@@ -2,6 +2,6 @@ package com.service.stream.generation;
 
 public interface StreamContentFileUpdater {
 
-    String updateStreamContentFile(String newContentFilePath, String streamName);
+    String updateStreamContentFile(String newContentFilePath, String streamName, boolean isStrictUpdate);
 
 }
