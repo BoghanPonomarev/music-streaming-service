@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.2.4.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id "org.flywaydb.flyway" version "6.4.2"
 	id 'java'
 }
 
@@ -43,6 +44,18 @@ dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
+}
+
+flyway {
+	url = "$System.env.DB_NO_SCHEMA_URL"
+	user = "$System.env.DB_USERNAME"
+	password = "$System.env.DB_PASSWORD"
+	schemas = ['music']
+	baselineOnMigrate = true
+	placeholders = [
+			'useUnicode': 'true',
+			'serverTimezone': 'UTC'
+	]
 }
 
 test {
