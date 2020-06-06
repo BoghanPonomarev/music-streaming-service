@@ -14,4 +14,6 @@ public interface StreamContext {
 
   StreamPortionDto getStreamPortionDto();
 
+  void terminateStream();
+
 }

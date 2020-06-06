@@ -110,6 +110,16 @@ public class StreamContextImpl implements StreamContext {
     }
 
     @Override
+    public void terminateStream() {
+        LockUtils.withLock(startLock, () -> {
+            StreamSegment streamSegment = contentSegments.get(currentStreamIteration);
+            if(streamSegment != null) {
+                streamSegment.terminateSegmentStream();
+            }
+        });
+    }
+
+    @Override
     public String getStreamName() {
         return streamName;
     }
@@ -132,7 +142,7 @@ public class StreamContextImpl implements StreamContext {
         }
 
         void startSegmentStream() {
-            log.info("Stream segment starting {}", this);
+            log.info("Stream({}) segment starting {}", streamName, this);
             contentInjectionExecutorService.execute(() -> streamContentInjector.injectStreamContent(streamName, false, false));
             iterationScheduler = Executors.newScheduledThreadPool(1);
             iterationScheduler.scheduleWithFixedDelay(this::nextPortion, amongIterationDelay, amongIterationDelay, TimeUnit.SECONDS);
@@ -144,7 +154,7 @@ public class StreamContextImpl implements StreamContext {
 
                 if (portionsLeft <= 1) {
                     waitLastSegmentPortion();
-                    stopSegmentStream();
+                    switchToNextSegmentStream();
                 }
             });
         }
@@ -168,9 +178,14 @@ public class StreamContextImpl implements StreamContext {
                     portionsLeft, streamName);
         }
 
-        void stopSegmentStream() {
+        void switchToNextSegmentStream() {
             systemResourceCleaner.cleanStreamResource(contentStreamPortions.values());
             startNextSegment();
+            iterationScheduler.shutdownNow();
+        }
+
+        void terminateSegmentStream() {
+            systemResourceCleaner.cleanStreamResource(contentStreamPortions.values());
             iterationScheduler.shutdownNow();
         }
 
