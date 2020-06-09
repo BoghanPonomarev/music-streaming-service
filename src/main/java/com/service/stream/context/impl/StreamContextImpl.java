@@ -186,7 +186,9 @@ public class StreamContextImpl implements StreamContext {
 
         void terminateSegmentStream() {
             systemResourceCleaner.cleanStreamResource(contentStreamPortions.values());
-            iterationScheduler.shutdownNow();
+            if(iterationScheduler != null) {
+                iterationScheduler.shutdownNow();
+            }
         }
 
         private void startNextSegment() {
